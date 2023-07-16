@@ -2,37 +2,38 @@
 #include <map>
 #include <queue>
 #include <utility>
+#include <vector>
 
 using namespace std;
 
-class SistemaOperacional
-{
-    Escalonador escalonador;
-    MapaDeBits mapa;
-    Dispatcher dispatcher;
-    queue<pair<string, int>> filaDeProntos;
-    int proxPIDdeUsuario;
-    int proxPIDdeSO;
+// class SistemaOperacional
+// {
+//     Escalonador escalonador;
+//     MapaDeBits mapa;
+//     Dispatcher dispatcher;
+//     queue<pair<string, int>> filaDeProntos;
+//     int proxPIDdeUsuario;
+//     int proxPIDdeSO;
 
-public:
-    SistemaOperacional(string modo) // cria os objetos de outras classes (usa construtor das outras classes)
-    {
-        if (modo == "robin")
-            this->escalonador = EscalonadorRobin();
-        else
-            this->escalonador = EscalonadorFIFO();
+// public:
+//     SistemaOperacional(string modo) // cria os objetos de outras classes (usa construtor das outras classes)
+//     {
+//         if (modo == "robin")
+//             this->escalonador = EscalonadorRobin();
+//         else
+//             this->escalonador = EscalonadorFIFO();
 
-        // this->escalonador = (modo == "robin") ? EscalonadorRobin() : EscalonadorFIFO();
-        this->mapa = MapaDeBits();
-        this->dispatcher = Dispatcher();
-        proxPIDdeUsuario = 1;
-    }
+//         // this->escalonador = (modo == "robin") ? EscalonadorRobin() : EscalonadorFIFO();
+//         this->mapa = MapaDeBits();
+//         this->dispatcher = Dispatcher();
+//         proxPIDdeUsuario = 1;
+//     }
 
-    void atualizaProximoPID()
-    {
-        proxPIDdeUsuario += 1;
-    } // incrementa proximoPID
-};
+//     void atualizaProximoPID()
+//     {
+//         proxPIDdeUsuario += 1;
+//     } // incrementa proximoPID
+// };
 
 class Dispatcher
 {
@@ -93,35 +94,62 @@ public:
     }
 };
 
-class Processo
-{
-private:
-    int PID, PC;
-    string tipo = "usuario"; // "so"
-    map<string, int> regs;
-    TaskControlBlock processoTCB;
-    string *programa;
+// class Processo
+// {
+// private:
+//     int PID, PC;
+//     string tipo = "usuario"; // "so"
+//     map<string, int> regs;
+//     TaskControlBlock processoTCB;
+//     vector<string> programa;
 
-public:
-    Processo(int PID, string *programa)
-    {
-        this->PID = PID;
-        this->PC = 0;
-        this->regs["AX"] = 0;
-        this->regs["BX"] = 0;
-        this->regs["CX"] = 0;
-        this->regs["DX"] = 0;
-        this->processoTCB = TaskControlBlock(PID);
-        this->programa = programa;
-    }
+// public:
+//     Processo(int PID, vector<string> programa)
+//     {
+//         this->PID = PID;
+//         this->PC = 0;
+//         this->regs["AX"] = 0;
+//         this->regs["BX"] = 0;
+//         this->regs["CX"] = 0;
+//         this->regs["DX"] = 0;
+//         this->processoTCB = TaskControlBlock(PID);
+//         this->programa = programa;
+//     }
 
-    void proximaInstrucao()
-    {
-    }
-    void salvaTCB()
-    {
-    }
-};
+//     int getPID()
+//     {
+//         return this->PID;
+//     }
+
+//     int getPC()
+//     {
+//         return this->PC;
+//     }
+
+//     void setPC(int PC)
+//     {
+//         this->PC = PC;
+//     }
+
+//     void incrementaPC()
+//     {
+//         this->PC++;
+//     }
+
+//     vector<string> getPrograma()
+//     {
+//         return this->programa;
+//     }
+
+//     void proximaInstrucao()
+//     {
+//     }
+//     void salvaTCB()
+//     {
+//     }
+// };
+
+/////////////////////////////////////////////////////
 
 class MapaDeBits
 {
