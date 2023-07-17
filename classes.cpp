@@ -1,4 +1,5 @@
 #include <string>
+#include "Memoria.cpp"
 #include <map>
 #include <queue>
 #include <utility>
@@ -8,7 +9,7 @@ using namespace std;
 class SistemaOperacional
 {
     Escalonador escalonador;
-    MapaDeBits mapa;
+    Memoria memoria;
     Dispatcher dispatcher;
     queue<pair<string, int>> filaDeProntos;
     int proxPIDdeUsuario;
@@ -23,7 +24,8 @@ public:
             this->escalonador = EscalonadorFIFO();
 
         // this->escalonador = (modo == "robin") ? EscalonadorRobin() : EscalonadorFIFO();
-        this->mapa = MapaDeBits();
+        this->escalonador = Escalonador(modo);
+        this->memoria = Memoria();
         this->dispatcher = Dispatcher();
         proxPIDdeUsuario = 1;
     }
@@ -123,23 +125,6 @@ public:
     }
 };
 
-class MapaDeBits
-{
-public:
-    MapaDeBits()
-    {
-    }
-
-    bool alocaMemoria()
-    {
-    }
-    bool desalocaMemoria()
-    {
-    }
-    bool compacta()
-    {
-    }
-};
 
 class Interface
 {
