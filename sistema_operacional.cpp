@@ -2,7 +2,8 @@
 #include <map>
 #include <queue>
 #include <utility>
-#include "processo.cpp"
+#include <iostream>
+// #include "processo.cpp"
 #include "processo_so.cpp"
 #include "processo_usuario.cpp"
 
@@ -10,7 +11,7 @@ using namespace std;
 
 class SistemaOperacional
 {
-    MapaDeBits mapa;
+    // MapaDeBits mapa;
     queue<Processo> filaDeProntos;
     Processo *processoExecutando;
     int proxPIDdeUsuario;
@@ -25,7 +26,7 @@ public:
         //     escalonador = EscalonadorFIFO();
 
         // escalonador = (modo == "robin") ? EscalonadorRobin() : EscalonadorFIFO();
-        mapa = MapaDeBits();
+        // mapa = MapaDeBits();
         processoExecutando = NULL;
         proxPIDdeUsuario = 1;
         proxPIDdeSO = 1;
@@ -94,9 +95,10 @@ public:
         int programaExecutandoPC = processoUsuarioExecutando.getPC();
         string linhaExecutando = programaExecutando[programaExecutandoPC];
 
-        if (processoExecutando == NULL)
-            return;
+        // if (processoExecutando == NULL)
+        //     return;
 
+        cout << processoUsuarioExecutando.getPC() << " " << linhaExecutando << endl;
         if (linhaExecutando == "HLT")
         {
             // desaloca memoria do processo
@@ -107,6 +109,7 @@ public:
             processoUsuarioExecutando.incrementaPC();
         }
 
+        // revisar/melhorar - usar um metodo?
         *(processoExecutando) = processoUsuarioExecutando;
 
         return;
@@ -122,6 +125,11 @@ public:
         Processo *primeiroProcesso = &(filaDeProntos.front());
         filaDeProntos.pop();
         return primeiroProcesso;
+    }
+
+    queue<Processo> getFilaDeProntos()
+    {
+        return filaDeProntos;
     }
 
     int getTamanhoFilaDeProntos()

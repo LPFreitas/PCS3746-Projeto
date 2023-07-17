@@ -1,5 +1,8 @@
-#include "classes.cpp"
-#include "processo.cpp"
+#include "processo.hpp"
+#include <string>
+#include <vector>
+
+using namespace std;
 
 class ProcessoSO : public Processo
 {

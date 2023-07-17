@@ -26,6 +26,7 @@ vector<string> leArquivo(const string &nomeArquivo);
 int main(int argc, char *argv[])
 {
     string modo = argv[1];
+    char proximaInstrucao;
 
     if (preparaConexaoSocket())
         return 1;
@@ -88,8 +89,19 @@ int main(int argc, char *argv[])
             cout << "Comando inválido" << endl;
         }
 
+        queue<Processo> filaCopia(sistemaOperacional.getFilaDeProntos());
+        while (!filaCopia.empty())
+        {
+            Processo p = filaCopia.front();
+            cout << p.getTipo() << " " << p.getPID() << " | ";
+            filaCopia.pop();
+        }
+        cout << endl;
+
         sistemaOperacional.executa();
 
+        cout << "Proxima instrução" << endl;
+        scanf("%c", &proximaInstrucao);
         // atualiza interface
         // getchar (n - proximo instrucao)
     }

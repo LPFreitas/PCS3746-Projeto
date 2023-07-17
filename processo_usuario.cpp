@@ -1,5 +1,9 @@
-#include "classes.cpp"
-#include "processo.cpp"
+#include "processo.hpp"
+#include <string>
+#include <vector>
+#include <map>
+
+using namespace std;
 
 class ProcessoUsuario : public Processo
 {
@@ -19,7 +23,7 @@ public:
         // this->processoTCB = TaskControlBlock(PID);
     }
 
-    static ProcessoUsuario processoParaProcessoUsuario(Processo &processo)
+    static ProcessoUsuario processoParaProcessoUsuario(Processo processo)
     {
         return ProcessoUsuario(processo.getPID(), processo.getTipo(), processo.getPrograma());
     }
