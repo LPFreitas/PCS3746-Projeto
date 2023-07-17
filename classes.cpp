@@ -24,7 +24,7 @@ public:
             this->escalonador = EscalonadorFIFO();
 
         // this->escalonador = (modo == "robin") ? EscalonadorRobin() : EscalonadorFIFO();
-        this->escalonador = Escalonador(modo);
+        // this->escalonador = Escalonador(modo);
         this->memoria = Memoria();
         this->dispatcher = Dispatcher();
         proxPIDdeUsuario = 1;
