@@ -23,9 +23,9 @@ public:
         // this->processoTCB = TaskControlBlock(PID);
     }
 
-    static ProcessoUsuario processoParaProcessoUsuario(Processo processo)
+    static ProcessoUsuario *processoParaProcessoUsuario(Processo processo)
     {
-        return ProcessoUsuario(processo.getPID(), processo.getTipo(), processo.getPrograma());
+        return new ProcessoUsuario(processo.getPID(), processo.getTipo(), processo.getPrograma());
     }
 
     int getPC()
@@ -40,6 +40,6 @@ public:
 
     void incrementaPC()
     {
-        PC++;
+        PC += 1;
     }
 };

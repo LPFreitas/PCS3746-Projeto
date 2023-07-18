@@ -1,18 +1,17 @@
 #include <string>
 #include <map>
-#include <queue>
 #include <utility>
 #include <iostream>
-// #include "processo.cpp"
 #include "processo_so.cpp"
 #include "processo_usuario.cpp"
+#include "fila_de_prontos.cpp"
 
 using namespace std;
 
 class SistemaOperacional
 {
     // MapaDeBits mapa;
-    queue<Processo> filaDeProntos;
+    FilaDeProntos filaDeProntos;
     Processo *processoExecutando;
     int proxPIDdeUsuario;
     int proxPIDdeSO;
@@ -34,26 +33,26 @@ public:
 
     void incrementaProximoPIDdeUsuario()
     {
-        proxPIDdeUsuario++;
+        proxPIDdeUsuario += 1;
     }
 
     void incrementaProximoPIDdeSO()
     {
-        proxPIDdeUsuario++;
+        proxPIDdeSO += 1;
     }
 
     void criaProcessoSO(string tipo, int numPosicoesMemoria, vector<string> programa)
     {
-        ProcessoSO processoSO = ProcessoSO(proxPIDdeSO, tipo, numPosicoesMemoria, programa);
+        ProcessoSO *processoSO = new ProcessoSO(proxPIDdeSO, tipo, numPosicoesMemoria, programa);
         incrementaProximoPIDdeSO();
-        insereFilaDeProntos(processoSO);
+        filaDeProntos.insereNaFila(*processoSO);
     }
 
     void criaProcessoUsuario(string tipo, vector<string> programa)
     {
-        ProcessoUsuario processoUsuario = ProcessoUsuario(proxPIDdeUsuario, tipo, programa);
+        ProcessoUsuario *processoUsuario = new ProcessoUsuario(proxPIDdeUsuario, tipo, programa);
         incrementaProximoPIDdeUsuario();
-        insereFilaDeProntos(processoUsuario);
+        filaDeProntos.insereNaFila(*processoUsuario);
     }
 
     void mataProcessoUsuario(int PID) // ?
@@ -90,15 +89,15 @@ public:
 
     void executaProcessoUsuario()
     {
-        ProcessoUsuario processoUsuarioExecutando = ProcessoUsuario::processoParaProcessoUsuario(*processoExecutando);
-        vector<string> programaExecutando = processoUsuarioExecutando.getPrograma();
-        int programaExecutandoPC = processoUsuarioExecutando.getPC();
+        ProcessoUsuario *processoUsuarioExecutando = ProcessoUsuario::processoParaProcessoUsuario(*processoExecutando);
+        vector<string> programaExecutando = (*processoUsuarioExecutando).getPrograma();
+        int programaExecutandoPC = (*processoUsuarioExecutando).getPC();
         string linhaExecutando = programaExecutando[programaExecutandoPC];
 
         // if (processoExecutando == NULL)
         //     return;
 
-        cout << processoUsuarioExecutando.getPC() << " " << linhaExecutando << endl;
+        cout << programaExecutandoPC << " " << linhaExecutando << endl;
         if (linhaExecutando == "HLT")
         {
             // desaloca memoria do processo
@@ -106,36 +105,38 @@ public:
         }
         else
         {
-            processoUsuarioExecutando.incrementaPC();
+            (*processoUsuarioExecutando).incrementaPC();
         }
 
         // revisar/melhorar - usar um metodo?
-        *(processoExecutando) = processoUsuarioExecutando;
+        processoExecutando = processoUsuarioExecutando;
+
+        
 
         return;
     }
 
-    void insereFilaDeProntos(Processo processo)
-    {
-        filaDeProntos.push(processo);
-    }
+    // void insereFilaDeProntos(Processo processo)
+    // {
+    //     filaDeProntos.push(processo);
+    // }
 
-    Processo *removeFilaDeProntos()
-    {
-        Processo *primeiroProcesso = &(filaDeProntos.front());
-        filaDeProntos.pop();
-        return primeiroProcesso;
-    }
+    // Processo *removeFilaDeProntos()
+    // {
+    //     Processo *primeiroProcesso = &(filaDeProntos.front());
+    //     filaDeProntos.pop();
+    //     return primeiroProcesso;
+    // }
 
-    queue<Processo> getFilaDeProntos()
+    FilaDeProntos getFilaDeProntos()
     {
         return filaDeProntos;
     }
 
-    int getTamanhoFilaDeProntos()
-    {
-        return filaDeProntos.size();
-    }
+    // int getTamanhoFilaDeProntos()
+    // {
+    //     return filaDeProntos.size();
+    // }
 
     Processo *dispatcher()
     {
@@ -149,9 +150,9 @@ public:
     // FIFO
     Processo *escalonador()
     {
-        if (getTamanhoFilaDeProntos() == 0)
+        if (filaDeProntos.size() == 0)
             return NULL;
 
-        return removeFilaDeProntos();
+        return filaDeProntos.tiraDaFila();
     }
 };

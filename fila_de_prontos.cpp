@@ -36,12 +36,12 @@ public:
     }
 
     // Remove o elemento na frente da fila (início da lista) e o retorna
-    Processo tiraDaFila() {
+    Processo *tiraDaFila() {
         if (filaVazia()) {
             throw std::runtime_error("Fila de prontos vazia. Impossível retirar um processo.");
         }
 
-        Processo processo = primeiroProcesso->processo;
+        Processo* processo = new Processo(primeiroProcesso->processo);
         ElementoFila* temp = primeiroProcesso;
         primeiroProcesso = primeiroProcesso->proximoProcesso;
         delete temp;
@@ -50,9 +50,16 @@ public:
 
     // Função para imprimir os elementos da fila
     void imprimeFila() {
+        if (filaVazia())
+            cout << "Fila Vazia" << endl;
         ElementoFila* atual = primeiroProcesso;
         while (atual != nullptr) {
-            cout << (atual->processo).getTipo() << " ";
+            string tipoProcesso = (atual->processo).getTipo();
+            int processoPID = (atual->processo).getPID();
+            if (tipoProcesso == "usuario")
+                cout << "PID " << processoPID << " | ";
+            else
+                cout << tipoProcesso << " " << processoPID << " | ";
             atual = atual->proximoProcesso;
         }
         cout << endl;
@@ -62,7 +69,7 @@ public:
         ElementoFila* atual = primeiroProcesso;
         ElementoFila* anterior = nullptr;
         while (atual != nullptr) {
-            if ((atual->processo).isEqual(processoVitima)) {
+            if ((atual->processo).compara(processoVitima)) {
                 if (anterior == nullptr) {
                     // Caso o elemento a ser removido seja o primeiro da fila
                     primeiroProcesso = atual->proximoProcesso;
@@ -75,5 +82,17 @@ public:
             anterior = atual;
             atual = atual->proximoProcesso;
         }
+    }
+
+    int size() {
+        int count = 0;
+        ElementoFila* atual = primeiroProcesso;
+
+        while (atual != nullptr) {
+            count++;
+            atual = atual->proximoProcesso;
+        }
+
+        return count;
     }
 };
