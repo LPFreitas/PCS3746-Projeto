@@ -32,6 +32,10 @@ public:
     {
         return programa;
     }
+
+    bool compara(Processo p) {
+        return p.getTipo() == tipo && p.getPID() == PID;
+    }
 };
 
 #endif
