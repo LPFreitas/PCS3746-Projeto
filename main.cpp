@@ -26,7 +26,6 @@ vector<string> leArquivo(const string &nomeArquivo);
 int main(int argc, char *argv[])
 {
     string modo = argv[1];
-    // char proximaInstrucao;
 
     if (preparaConexaoSocket())
         return 1;
@@ -61,20 +60,10 @@ int main(int argc, char *argv[])
             int numPosicoesMemoria = stoi(parametrosComando[2]);
             string arquivoPrograma = parametrosComando[4];
 
-            // cout << "Comando "
-            //      << parametrosComando[0] << " "
-            //      << parametrosComando[1] << " "
-            //      << parametrosComando[2] << " "
-            //      << parametrosComando[3] << " "
-            //      << parametrosComando[4] << endl;
-
             vector<string> programa = leArquivo(arquivoPrograma);
 
             // Colocar Create na fila ou para execucao
             sistemaOperacional.criaProcessoSO("create", numPosicoesMemoria, programa);
-
-            // for (string &linha : programa)
-            //     cout << linha << endl;
         }
         else if (parametrosComando[0] == "kill")
         {
@@ -84,26 +73,15 @@ int main(int argc, char *argv[])
             //      << parametrosComando[0] << " "
             //      << parametrosComando[1] << endl;
         }
-        else if (!(parametrosComando.size() == 1 && parametrosComando[0] == "n")) {
+        else if (!(parametrosComando.size() == 1 && parametrosComando[0] == "n"))
+        {
             cout << "Comando inválido" << endl;
         }
 
-        // queue<Processo> filaCopia(sistemaOperacional.getFilaDeProntos());
-        // while (!filaCopia.empty())
-        // {
-        //     Processo p = filaCopia.front();
-        //     cout << p.getTipo() << " " << p.getPID() << " | ";
-        //     filaCopia.pop();
-        // }
         sistemaOperacional.getFilaDeProntos().imprimeFila();
-
-        cout << endl;
-
         sistemaOperacional.executa();
 
-        cout << "Proxima instrução" << endl;
-        // sleep(5);
-        // scanf("%c", &proximaInstrucao);
+        // cout << "Proxima instrução" << endl;
         // atualiza interface
         // getchar (n - proximo instrucao)
     }

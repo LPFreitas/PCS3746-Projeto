@@ -27,4 +27,4 @@ envia: envia.cpp
 
 # Limpa os arquivos objeto e o executável
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE) envia envia.o
+	rm -f $(OBJECTS) $(EXECUTABLE)

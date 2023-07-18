@@ -2,8 +2,9 @@
 #include <map>
 #include <utility>
 #include <iostream>
-#include "processo_so.cpp"
-#include "processo_usuario.cpp"
+// #include "processo_so.cpp"
+// #include "processo_usuario.cpp"
+#include "processo.cpp"
 #include "fila_de_prontos.cpp"
 
 using namespace std;
@@ -43,14 +44,14 @@ public:
 
     void criaProcessoSO(string tipo, int numPosicoesMemoria, vector<string> programa)
     {
-        ProcessoSO *processoSO = new ProcessoSO(proxPIDdeSO, tipo, numPosicoesMemoria, programa);
+        Processo *processoSO = new Processo(proxPIDdeSO, numPosicoesMemoria, tipo, programa);
         incrementaProximoPIDdeSO();
         filaDeProntos.insereNaFila(*processoSO);
     }
 
     void criaProcessoUsuario(string tipo, vector<string> programa)
     {
-        ProcessoUsuario *processoUsuario = new ProcessoUsuario(proxPIDdeUsuario, tipo, programa);
+        Processo *processoUsuario = new Processo(proxPIDdeUsuario, tipo, programa);
         incrementaProximoPIDdeUsuario();
         filaDeProntos.insereNaFila(*processoUsuario);
     }
@@ -61,6 +62,7 @@ public:
 
     void executa()
     {
+        // cout << "Executando " << (*processoExecutando).getTipo() << " " << (*processoExecutando).getPID() << endl;
         if (processoExecutando == NULL)
             processoExecutando = dispatcher();
         else if ((*processoExecutando).getTipo() == "usuario")
@@ -89,9 +91,9 @@ public:
 
     void executaProcessoUsuario()
     {
-        ProcessoUsuario *processoUsuarioExecutando = ProcessoUsuario::processoParaProcessoUsuario(*processoExecutando);
-        vector<string> programaExecutando = (*processoUsuarioExecutando).getPrograma();
-        int programaExecutandoPC = (*processoUsuarioExecutando).getPC();
+        ProcessoUsuario processoUsuarioExecutando = ProcessoUsuario::processoParaProcessoUsuario(*processoExecutando);
+        vector<string> programaExecutando = processoUsuarioExecutando.getPrograma();
+        int programaExecutandoPC = processoUsuarioExecutando.getPC();
         string linhaExecutando = programaExecutando[programaExecutandoPC];
 
         // if (processoExecutando == NULL)
@@ -105,13 +107,13 @@ public:
         }
         else
         {
-            (*processoUsuarioExecutando).incrementaPC();
+            processoUsuarioExecutando.incrementaPC();
         }
 
         // revisar/melhorar - usar um metodo?
-        processoExecutando = processoUsuarioExecutando;
-
-        
+        cout << "PC antes " << processoUsuarioExecutando.getPC() << endl;
+        processoExecutando = &processoUsuarioExecutando;
+        cout << "PC depois " << ProcessoUsuario::processoParaProcessoUsuario(*processoExecutando).getPC() << endl;
 
         return;
     }

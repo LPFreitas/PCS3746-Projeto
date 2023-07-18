@@ -23,9 +23,9 @@ public:
         // this->processoTCB = TaskControlBlock(PID);
     }
 
-    static ProcessoUsuario *processoParaProcessoUsuario(Processo processo)
+    static ProcessoUsuario processoParaProcessoUsuario(Processo processo)
     {
-        return new ProcessoUsuario(processo.getPID(), processo.getTipo(), processo.getPrograma());
+        return ProcessoUsuario(processo.getPID(), processo.getTipo(), processo.getPrograma());
     }
 
     int getPC()
