@@ -48,7 +48,7 @@ public:
     {
         if (filaVazia())
         {
-            throw std::runtime_error("Fila de prontos vazia. Impossível retirar um processo.");
+            throw runtime_error("Fila de prontos vazia. Impossível retirar um processo.");
         }
 
         Processo *processo = new Processo(primeiroProcesso->processo);

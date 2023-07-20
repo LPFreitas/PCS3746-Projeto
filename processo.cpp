@@ -13,13 +13,13 @@ private:
     // map<string, int> regs;
 
 public:
-    Processo(int PID, const std::string &tipo, const std::vector<std::string> &programa)
+    Processo(int PID, const string &tipo, const vector<string> &programa)
         : PID(PID), tipo(tipo), programa(programa)
     {
         PC = 0;
     }
 
-    Processo(int PID, const std::string &tipo, const std::vector<std::string> &programa, int numPosicoesMemoria)
+    Processo(int PID, const string &tipo, const vector<string> &programa, int numPosicoesMemoria)
         : PID(PID), tipo(tipo), programa(programa), numPosicoesMemoria(numPosicoesMemoria)
     {
     }

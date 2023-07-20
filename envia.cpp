@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <cstring>
 
+using namespace std;
+
 int main()
 {
     int clientSocket;
@@ -15,7 +17,7 @@ int main()
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1)
     {
-        std::cerr << "Erro ao criar o socket\n";
+        cerr << "Erro ao criar o socket" << endl;
         return 1;
     }
 
@@ -27,27 +29,27 @@ int main()
     // Conecta ao servidor
     if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
     {
-        std::cerr << "Erro ao conectar ao servidor\n";
+        cerr << "Erro ao conectar ao servidor" << endl;
         return 1;
     }
 
-    std::cout << "Conexão estabelecida\n";
+    cout << "Conexão estabelecida" << endl;
 
     // Envia dados para o servidor
     while (true)
     {
-        std::cout << "Mensagem: ";
-        std::cin.getline(buffer, sizeof(buffer));
+        cout << "Mensagem: ";
+        cin.getline(buffer, sizeof(buffer));
 
         ssize_t bytesSent = send(clientSocket, buffer, strlen(buffer), 0);
         if (bytesSent == -1)
         {
-            std::cerr << "Erro ao enviar os dados\n";
+            cerr << "Erro ao enviar os dados" << endl;
             break;
         }
         else if (bytesSent == 0)
         {
-            std::cout << "Conexão encerrada pelo servidor\n";
+            cout << "Conexão encerrada pelo servidor" << endl;
             break;
         }
     }

@@ -101,7 +101,7 @@ int preparaConexaoSocket()
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1)
     {
-        cerr << "Erro ao criar o socket\n";
+        cerr << "Erro ao criar o socket" << endl;
         return 1;
     }
 
@@ -113,28 +113,28 @@ int preparaConexaoSocket()
     // Vincula o socket ao endereço do servidor
     if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
     {
-        cerr << "Erro ao vincular o socket ao endereço\n";
+        cerr << "Erro ao vincular o socket ao endereço" << endl;
         return 1;
     }
 
     // Aguarda por conexoes
     if (listen(serverSocket, 1) == -1)
     {
-        cerr << "Erro ao aguardar por conexões\n";
+        cerr << "Erro ao aguardar por conexões" << endl;
         return 1;
     }
 
-    cout << "Aguardando por conexões...\n";
+    cout << "Aguardando por conexões..." << endl;
 
     // Aceita uma conexao de cliente
     clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientAddrLen);
     if (clientSocket == -1)
     {
-        cerr << "Erro ao aceitar a conexão\n";
+        cerr << "Erro ao aceitar a conexão" << endl;
         return 1;
     }
 
-    cout << "Conexão estabelecida\n";
+    cout << "Conexão estabelecida" << endl;
 
     return 0;
 }
@@ -145,12 +145,12 @@ int leComando()
     ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
     if (bytesRead == -1)
     {
-        cerr << "Erro ao receber os dados\n";
+        cerr << "Erro ao receber os dados" << endl;
         return 1;
     }
     else if (bytesRead == 0)
     {
-        cout << "Cliente desconectado\n";
+        cout << "Cliente desconectado" << endl;
         return 1;
     }
     else
@@ -169,7 +169,7 @@ vector<string> leArquivo(const string &nomeArquivo)
     // Verifica se o arquivo foi aberto corretamente
     if (!arquivo.is_open())
     {
-        cerr << "Erro ao abrir o arquivo." << endl;
+        cerr << "Erro ao abrir o arquivo" << endl;
         return linhasPrograma;
     }
 
