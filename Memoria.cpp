@@ -1,46 +1,49 @@
-
 #include <cstring>
 #include <cstdio>
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
 class Memoria
 {
 
 private:
-    int tamanho_memoria;
-    int *mapa_de_bits;
+    int tamanhoMemoria;
+    int *mapaDeBits;
 
 public:
-    Memoria(int tamanho_memoria = 20)
+    Memoria(int tamanhoMemoria = 20)
     {
-        this->tamanho_memoria = tamanho_memoria;
-        this->mapa_de_bits = new int[tamanho_memoria];
-        for (int i=0; i<tamanho_memoria;i++)
-            this->mapa_de_bits[i] = 0;
-
+        this->tamanhoMemoria = tamanhoMemoria;
+        mapaDeBits = new int[tamanhoMemoria];
+        for (int i = 0; i < tamanhoMemoria; i++)
+            mapaDeBits[i] = 0;
     }
 
-    bool alocProcesso(int tamanho_desejado, int PID)
+    bool alocaProcesso(int tamanho_desejado, int PID)
     {
-        bool alocouProcesso = NULL;
+        bool alocouProcesso = false;
 
         // passa a memoria inteira
-        for (int i = 0; i < (this->tamanho_memoria); i++)
+        for (int i = 0; i < (tamanhoMemoria); i++)
         {
-            
-            if (this->mapa_de_bits[i] == 0)
+
+            if (mapaDeBits[i] == 0)
             {
-                
                 int j = i;
                 // verifica se o processo cabe naquele espaço
-                while (mapa_de_bits[j] == 0 && (j - i + 1) < tamanho_desejado && j + 1 < this->tamanho_memoria)
+                while (mapaDeBits[j] == 0 && (j - i + 1) < tamanho_desejado && j + 1 < tamanhoMemoria)
                     j++;
 
                 // caso caiba, coloca PID no mapa de bits
                 if (j - i + 1 == tamanho_desejado)
                 {
                     for (int k = i; k - i < tamanho_desejado; k++)
-                        mapa_de_bits[k] = PID;
+                        mapaDeBits[k] = PID;
 
-                    return 1;
+                    alocouProcesso = true;
+                    break;
                 }
             }
         }
@@ -48,39 +51,94 @@ public:
         return alocouProcesso;
     }
 
-    bool desalocMemoria(int PID)
+    bool desalocaMemoria(int PID)
     {
-        bool desaloc = NULL;
-        for(int i=0; i < (this->tamanho_memoria); i++)
+        bool desalocouProcesso = false;
+
+        for (int i = 0; i < (tamanhoMemoria); i++)
         {
-            if (this->mapa_de_bits[i] == PID){
-                this->mapa_de_bits[i] = 0;
-                desaloc = 1;
+            if (mapaDeBits[i] == PID)
+            {
+                int j = i;
+                while (mapaDeBits[j] == PID)
+                {
+                    mapaDeBits[j] = 0;
+                    j++;
+                }
+                desalocouProcesso = true;
             }
         }
-        return desaloc;
+
+        return desalocouProcesso;
     }
 
     void compactaMemoria()
     {
         int j = 0;
-        for (int i = 0; i < this->tamanho_memoria; i++) {
-            if (this->mapa_de_bits[i] != 0) {
-                this->mapa_de_bits[j] = this->mapa_de_bits[i];
+        for (int i = 0; i < tamanhoMemoria; i++)
+        {
+            if (mapaDeBits[i] != 0)
+            {
+                mapaDeBits[j] = mapaDeBits[i];
                 j++;
             }
         }
 
-        for (; j < this->tamanho_memoria; j++) {
-            this->mapa_de_bits[j] = 0;
+        for (; j < tamanhoMemoria; j++)
+        {
+            mapaDeBits[j] = 0;
         }
     }
 
     void printMapaDeBits()
     {
-        printf("Mapa de Bits: ");
-        for (int i = 0; i < 20; i++) {
-            printf("%d | ", this->mapa_de_bits[i]);
+        // Imprime a moldura superior do cabeçalho
+        cout << "+";
+        for (int i = 0; i < 24; ++i)
+        {
+            cout << "-";
+        }
+        cout << "+" << endl;
+
+        // Imprime o cabeçalho
+        cout << "|       Mapa de Bits     |" << endl;
+
+        // Imprime a moldura intermediária do cabeçalho
+        cout << "+";
+        for (int i = 0; i < 24; ++i)
+        {
+            cout << "-";
+        }
+        cout << "+" << endl;
+
+        // Imprime a moldura superior da tabela
+        cout << "+";
+        for (int i = 0; i < 5; ++i)
+        {
+            cout << "----+";
+        }
+        cout << endl;
+
+        // Imprime o mapa de bits como uma tabela de 4 linhas e 5 colunas
+        int contador = 0;
+        for (int i = 0; i < tamanhoMemoria / 5; ++i)
+        {
+            // Imprime a moldura lateral esquerda da tabela
+            cout << "| ";
+            for (int j = 0; j < 5; ++j)
+            {
+                cout << setw(2) << mapaDeBits[contador] << " | ";
+                ++contador;
+            }
+            cout << endl;
+
+            // Imprime a moldura intermediária da tabela
+            cout << "+";
+            for (int j = 0; j < 5; ++j)
+            {
+                cout << "----+";
+            }
+            cout << endl;
         }
     }
 };
