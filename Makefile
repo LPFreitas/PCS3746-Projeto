@@ -6,7 +6,7 @@ CXXFLAGS = -lstdc++
 EXECUTABLE = main
 
 # Lista de arquivos fonte (main.cpp e outras classes)
-SOURCES = main.cpp sistema_operacional.cpp fila_de_prontos.cpp processo_so.cpp processo_usuario.cpp
+SOURCES = main.cpp sistema_operacional.cpp memoria.cpp fila_de_prontos.cpp processo.cpp
 
 # Gera os nomes dos arquivos objeto substituindo a extensão .cpp por .o
 OBJECTS = $(SOURCES:.cpp=.o) 
@@ -15,7 +15,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 all: $(EXECUTABLE)
 
 # Regra para gerar o executável
-$(EXECUTABLE): $(OBJECTS) processo.hpp
+$(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXECUTABLE)
 
 # Regra para compilar os arquivos fonte em arquivos objeto

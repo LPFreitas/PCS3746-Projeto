@@ -7,27 +7,60 @@ using namespace std;
 class Processo
 {
 private:
-    int PC, PID;
-    int numPosicoesMemoria;
+    int PC, PID, numPosicoesMemoria;
     string tipo;
     vector<string> programa;
     // map<string, int> regs;
 
 public:
-    Processo(int PID, string tipo, vector<string> programa)
+    Processo(int PID, const std::string &tipo, const std::vector<std::string> &programa)
+        : PID(PID), tipo(tipo), programa(programa)
     {
         PC = 0;
-        this->PID = PID;
-        this->tipo = tipo;
-        this->programa = programa;
     }
 
-    Processo(int PID, int numPosicoesMemoria, string tipo, vector<string> programa)
+    Processo(int PID, const std::string &tipo, const std::vector<std::string> &programa, int numPosicoesMemoria)
+        : PID(PID), tipo(tipo), programa(programa), numPosicoesMemoria(numPosicoesMemoria)
     {
-        PC = 0;
-        this->PID = PID;
-        this->numPosicoesMemoria = numPosicoesMemoria;
-        this->tipo = tipo;
-        this->programa = programa;
+    }
+
+    int getPC()
+    {
+        return PC;
+    }
+
+    void setPC(int PC)
+    {
+        this->PC = PC;
+    }
+
+    void incrementaPC()
+    {
+        PC += 1;
+    }
+
+    int getPID()
+    {
+        return PID;
+    }
+
+    int getNumPosicoesMemoria()
+    {
+        return numPosicoesMemoria;
+    }
+
+    string getTipo()
+    {
+        return tipo;
+    }
+
+    vector<string> getPrograma()
+    {
+        return programa;
+    }
+
+    bool compara(Processo p)
+    {
+        return p.getTipo() == tipo && p.getPID() == PID;
     }
 };

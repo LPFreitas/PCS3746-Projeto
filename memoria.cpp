@@ -13,7 +13,7 @@ private:
     int *mapaDeBits;
 
 public:
-    Memoria(int tamanhoMemoria = 20)
+    Memoria(int tamanhoMemoria)
     {
         this->tamanhoMemoria = tamanhoMemoria;
         mapaDeBits = new int[tamanhoMemoria];
@@ -21,7 +21,7 @@ public:
             mapaDeBits[i] = 0;
     }
 
-    bool alocaProcesso(int tamanho_desejado, int PID)
+    bool alocaMemoria(int tamanho_desejado, int PID)
     {
         bool alocouProcesso = false;
 

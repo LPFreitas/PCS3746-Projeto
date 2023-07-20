@@ -2,31 +2,24 @@
 #include <map>
 #include <utility>
 #include <iostream>
-// #include "processo_so.cpp"
-// #include "processo_usuario.cpp"
-#include "processo.cpp"
+
+#include "memoria.cpp"
 #include "fila_de_prontos.cpp"
 
 using namespace std;
 
 class SistemaOperacional
 {
-    // MapaDeBits mapa;
-    FilaDeProntos filaDeProntos;
+    Memoria *memoria;
+    FilaDeProntos *filaDeProntos;
     Processo *processoExecutando;
-    int proxPIDdeUsuario;
-    int proxPIDdeSO;
+    int proxPIDdeUsuario, proxPIDdeSO;
 
 public:
-    SistemaOperacional(string modo)
+    SistemaOperacional(string modo, int tamanhoMemoria = 20)
     {
-        // if (modo == "robin")
-        //     escalonador = EscalonadorRobin();
-        // else
-        //     escalonador = EscalonadorFIFO();
-
-        // escalonador = (modo == "robin") ? EscalonadorRobin() : EscalonadorFIFO();
-        // mapa = MapaDeBits();
+        memoria = new Memoria(tamanhoMemoria);
+        filaDeProntos = new FilaDeProntos();
         processoExecutando = NULL;
         proxPIDdeUsuario = 1;
         proxPIDdeSO = 1;
@@ -42,18 +35,18 @@ public:
         proxPIDdeSO += 1;
     }
 
-    void criaProcessoSO(string tipo, int numPosicoesMemoria, vector<string> programa)
+    void criaProcessoSO(string tipo, vector<string> programa, int numPosicoesMemoria)
     {
-        Processo *processoSO = new Processo(proxPIDdeSO, numPosicoesMemoria, tipo, programa);
+        Processo *processoSO = new Processo(proxPIDdeUsuario, tipo, programa, numPosicoesMemoria);
         incrementaProximoPIDdeSO();
-        filaDeProntos.insereNaFila(*processoSO);
+        (*filaDeProntos).insereNaFila(*processoSO);
     }
 
     void criaProcessoUsuario(string tipo, vector<string> programa)
     {
         Processo *processoUsuario = new Processo(proxPIDdeUsuario, tipo, programa);
         incrementaProximoPIDdeUsuario();
-        filaDeProntos.insereNaFila(*processoUsuario);
+        (*filaDeProntos).insereNaFila(*processoUsuario);
     }
 
     void mataProcessoUsuario(int PID) // ?
@@ -76,14 +69,19 @@ public:
         string tipoProcessoExecutando = (*processoExecutando).getTipo();
         if (tipoProcessoExecutando == "create")
         {
-            // Aloca memoria
+            // Aloca memoria para o processo de usuario a ser criado
+            (*memoria).alocaMemoria((*processoExecutando).getNumPosicoesMemoria(), proxPIDdeUsuario);
+
+            // Cria processo do tipo usuario
             vector<string> programa = (*processoExecutando).getPrograma();
             criaProcessoUsuario("usuario", programa);
+
+            // Atualiza o processo executando
             processoExecutando = dispatcher();
         }
         else if (tipoProcessoExecutando == "kill")
         {
-            // robin
+            // Robin
             // Desaloca a memoria
             // mata processo do tipo usuario - mataProcessoUsuario();
         }
@@ -91,70 +89,55 @@ public:
 
     void executaProcessoUsuario()
     {
-        ProcessoUsuario processoUsuarioExecutando = ProcessoUsuario::processoParaProcessoUsuario(*processoExecutando);
-        vector<string> programaExecutando = processoUsuarioExecutando.getPrograma();
-        int programaExecutandoPC = processoUsuarioExecutando.getPC();
+        vector<string> programaExecutando = (*processoExecutando).getPrograma();
+        int programaExecutandoPC = (*processoExecutando).getPC();
         string linhaExecutando = programaExecutando[programaExecutandoPC];
 
-        // if (processoExecutando == NULL)
-        //     return;
-
         cout << programaExecutandoPC << " " << linhaExecutando << endl;
-        if (linhaExecutando == "HLT")
+        if (linhaExecutando == "HLT") // Final do programa do processo usuario
         {
-            // desaloca memoria do processo
+            // Desaloca memoria do processo usuario
+            (*memoria).desalocaMemoria((*processoExecutando).getPID());
+
+            // Atualiza o processo executando
             processoExecutando = dispatcher();
         }
-        else
+        else // Processo usuario nao chegou ao fim do programa
         {
-            processoUsuarioExecutando.incrementaPC();
+            // Incrementa o PC do processo usario
+            (*processoExecutando).incrementaPC();
         }
-
-        // revisar/melhorar - usar um metodo?
-        cout << "PC antes " << processoUsuarioExecutando.getPC() << endl;
-        processoExecutando = &processoUsuarioExecutando;
-        cout << "PC depois " << ProcessoUsuario::processoParaProcessoUsuario(*processoExecutando).getPC() << endl;
 
         return;
     }
 
-    // void insereFilaDeProntos(Processo processo)
-    // {
-    //     filaDeProntos.push(processo);
-    // }
-
-    // Processo *removeFilaDeProntos()
-    // {
-    //     Processo *primeiroProcesso = &(filaDeProntos.front());
-    //     filaDeProntos.pop();
-    //     return primeiroProcesso;
-    // }
+    Memoria getMemoria()
+    {
+        return (*memoria);
+    }
 
     FilaDeProntos getFilaDeProntos()
     {
-        return filaDeProntos;
+        return (*filaDeProntos);
     }
-
-    // int getTamanhoFilaDeProntos()
-    // {
-    //     return filaDeProntos.size();
-    // }
 
     Processo *dispatcher()
     {
-        // robin
-        // salva tcb
-
-        // fifo
+        // FIFO
         return escalonador();
+
+        // Robin
+        // salva tcb ?
     }
 
     // FIFO
     Processo *escalonador()
     {
-        if (filaDeProntos.size() == 0)
+        // Se fila estiver vazia, nao ha processos a executar
+        if ((*filaDeProntos).tamanho() == 0)
             return NULL;
 
-        return filaDeProntos.tiraDaFila();
+        // Remove e escalona o primeiro processo da fila de prontos
+        return (*filaDeProntos).tiraDaFila();
     }
 };

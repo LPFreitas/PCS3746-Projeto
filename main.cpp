@@ -1,4 +1,3 @@
-// #include "classes.cpp"
 #include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -7,6 +6,7 @@
 #include <vector>
 #include <cstring>
 #include <fstream>
+#include <regex>
 
 #include "sistema_operacional.cpp"
 
@@ -18,9 +18,7 @@ socklen_t clientAddrLen = sizeof(clientAddr);
 char buffer[1024];
 
 int preparaConexaoSocket();
-
 int leComando();
-
 vector<string> leArquivo(const string &nomeArquivo);
 
 int main(int argc, char *argv[])
@@ -32,58 +30,62 @@ int main(int argc, char *argv[])
 
     SistemaOperacional sistemaOperacional(modo);
 
-    // Le os dados enviados pelo cliente e os exibe
     while (true)
     {
+        // Le comando do socket
         if (leComando())
         {
+            // Fecha os sockets se ocorreu erro na leitura do comando
             close(clientSocket);
             close(serverSocket);
             return 1;
         }
+
         // Decodifica comando
-        // create -m [numero de posicoes memoria] -p [programa]
-        // kill [PID]
+        // > create -m [numero de posicoes memoria] -p [arquivo programa]
+        // > kill [PID]
+        // > n
 
         string comando = buffer;
-        vector<string> parametrosComando;
-        istringstream iss(comando);
 
-        // Lendo cada parametro dao comando usando o operador >>
-        string parametro;
-        while (iss >> parametro)
-            parametrosComando.push_back(parametro);
+        regex PadraoComandoCreate("create -m (\\d+) -p ([^\\s]+)");
+        regex PadraoComandoKill("kill (\\d+)");
+        regex PadraoProximaInstrucao("n");
+        smatch matches;
 
-        // create -m 4 -p teste.txt
-        if (parametrosComando[0] == "create" && parametrosComando[1] == "-m" && parametrosComando[3] == "-p")
+        if (regex_search(comando, matches, PadraoComandoCreate) && matches.size() == 3)
         {
-            int numPosicoesMemoria = stoi(parametrosComando[2]);
-            string arquivoPrograma = parametrosComando[4];
-
+            // Obtem do comando numPosicoesMemoria e programa
+            int numPosicoesMemoria = stoi(matches[1]);
+            string arquivoPrograma = matches[2];
             vector<string> programa = leArquivo(arquivoPrograma);
 
-            // Colocar Create na fila ou para execucao
-            sistemaOperacional.criaProcessoSO("create", numPosicoesMemoria, programa);
+            // Cria processo de SO do tipo create
+            sistemaOperacional.criaProcessoSO("create", programa, numPosicoesMemoria);
         }
-        else if (parametrosComando[0] == "kill")
+        else if (regex_search(comando, matches, PadraoComandoKill) && matches.size() == 2)
         {
-            int PID = stoi(parametrosComando[1]);
-
-            // cout << "Comando "
-            //      << parametrosComando[0] << " "
-            //      << parametrosComando[1] << endl;
+            int PID = stoi(matches[1]);
         }
-        else if (!(parametrosComando.size() == 1 && parametrosComando[0] == "n"))
+        else if (!(regex_search(comando, matches, PadraoProximaInstrucao) && matches.size() == 1))
         {
             cout << "Comando inválido" << endl;
         }
 
+        // Antes da execucao
+        cout << "Antes da execução: " << endl;
+        sistemaOperacional.getMemoria().printMapaDeBits();
         sistemaOperacional.getFilaDeProntos().imprimeFila();
+
         sistemaOperacional.executa();
 
-        // cout << "Proxima instrução" << endl;
-        // atualiza interface
-        // getchar (n - proximo instrucao)
+        // Depois da execucao
+        cout << endl
+             << "Depois da execução: " << endl;
+        sistemaOperacional.getMemoria().printMapaDeBits();
+        sistemaOperacional.getFilaDeProntos().imprimeFila();
+
+        // Atualiza interface
     }
 
     // Fecha os sockets
@@ -105,7 +107,7 @@ int preparaConexaoSocket()
 
     // Configura o endereço do servidor
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(12345); // Porta para a conexão
+    serverAddr.sin_port = htons(12345); // Porta para a conexao
     serverAddr.sin_addr.s_addr = INADDR_ANY;
 
     // Vincula o socket ao endereço do servidor
@@ -115,7 +117,7 @@ int preparaConexaoSocket()
         return 1;
     }
 
-    // Aguarda por conexões
+    // Aguarda por conexoes
     if (listen(serverSocket, 1) == -1)
     {
         cerr << "Erro ao aguardar por conexões\n";
@@ -124,7 +126,7 @@ int preparaConexaoSocket()
 
     cout << "Aguardando por conexões...\n";
 
-    // Aceita uma conexão de cliente
+    // Aceita uma conexao de cliente
     clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientAddrLen);
     if (clientSocket == -1)
     {
@@ -164,7 +166,7 @@ vector<string> leArquivo(const string &nomeArquivo)
     ifstream arquivo(nomeArquivo);
     vector<string> linhasPrograma;
 
-    // Verificar se o arquivo foi aberto corretamente
+    // Verifica se o arquivo foi aberto corretamente
     if (!arquivo.is_open())
     {
         cerr << "Erro ao abrir o arquivo." << endl;
@@ -177,5 +179,5 @@ vector<string> leArquivo(const string &nomeArquivo)
 
     arquivo.close();
 
-    return linhasPrograma;
+    return (vector<string>)linhasPrograma;
 }
