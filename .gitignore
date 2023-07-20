@@ -1,3 +1,4 @@
-.vscode/**
-teste.*
-T*
+.vscode
+*.o
+main
+envia
