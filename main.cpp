@@ -179,5 +179,5 @@ vector<string> leArquivo(const string &nomeArquivo)
 
     arquivo.close();
 
-    return (vector<string>)linhasPrograma;
+    return linhasPrograma;
 }

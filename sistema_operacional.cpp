@@ -10,6 +10,7 @@ using namespace std;
 
 class SistemaOperacional
 {
+    string modo;
     Memoria *memoria;
     FilaDeProntos *filaDeProntos;
     Processo *processoExecutando;
@@ -18,6 +19,7 @@ class SistemaOperacional
 public:
     SistemaOperacional(string modo, int tamanhoMemoria = 20)
     {
+        this->modo = modo;
         memoria = new Memoria(tamanhoMemoria);
         filaDeProntos = new FilaDeProntos();
         processoExecutando = NULL;
@@ -70,7 +72,13 @@ public:
         if (tipoProcessoExecutando == "create")
         {
             // Aloca memoria para o processo de usuario a ser criado
-            (*memoria).alocaMemoria((*processoExecutando).getNumPosicoesMemoria(), proxPIDdeUsuario);
+            bool alocou = (*memoria).alocaMemoria((*processoExecutando).getNumPosicoesMemoria(), proxPIDdeUsuario);
+            if (!alocou)
+            {
+                cerr << "Erro ao alocar memória para o processo usuário " << proxPIDdeUsuario << ": memória insuficiente!" << endl;
+                cout << "Não foi possível criar o processo usuário " << proxPIDdeUsuario << endl;
+                return;
+            }
 
             // Cria processo do tipo usuario
             vector<string> programa = (*processoExecutando).getPrograma();
@@ -89,6 +97,7 @@ public:
 
     void executaProcessoUsuario()
     {
+        int processoExecutandoPID = (*processoExecutando).getPID();
         vector<string> programaExecutando = (*processoExecutando).getPrograma();
         int programaExecutandoPC = (*processoExecutando).getPC();
         string linhaExecutando = programaExecutando[programaExecutandoPC];
@@ -97,7 +106,13 @@ public:
         if (linhaExecutando == "HLT") // Final do programa do processo usuario
         {
             // Desaloca memoria do processo usuario
-            (*memoria).desalocaMemoria((*processoExecutando).getPID());
+            bool desalocou = (*memoria).desalocaMemoria(processoExecutandoPID);
+            if (!desalocou)
+            {
+                cerr << "Erro ao desalocar memória para o processo usuário " << processoExecutandoPID << endl;
+                cout << "Não foi possível encerrar o processo usuário " << processoExecutandoPID << ": memória não desalocou!" << endl;
+                return;
+            }
 
             // Atualiza o processo executando
             processoExecutando = dispatcher();
