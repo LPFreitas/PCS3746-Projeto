@@ -15,6 +15,7 @@ class SistemaOperacional
     FilaDeProntos *filaDeProntos;
     Processo *processoExecutando;
     int proxPIDdeUsuario, proxPIDdeSO;
+    string linhaExecutando;
 
 public:
     SistemaOperacional(string modo, int tamanhoMemoria = 20)
@@ -25,6 +26,7 @@ public:
         processoExecutando = NULL;
         proxPIDdeUsuario = 1;
         proxPIDdeSO = 1;
+        linhaExecutando = "";
     }
 
     void incrementaProximoPIDdeUsuario()
@@ -57,10 +59,46 @@ public:
 
     void executa()
     {
+
+       
         // cout << "Executando " << (*processoExecutando).getTipo() << " " << (*processoExecutando).getPID() << endl;
+        
+        Processo *processoAnterior = processoExecutando;
+        string linhaExecutadaAnteriormente = linhaExecutando;
+        // Nada a executar e nada foi executado
+        if (processoAnterior == NULL && filaDeProntos == NULL)
+            return;
+        // Fila de prontos com processo, mas nenhum executado (Ex.: primeiro create do sistema vai executar) 
+        else if (processoAnterior == NULL) {
+            executaProximoProcesso();
+            return;
+        // Algum processo já foi executado, estando a fila de prontos vazia ou não
+        } else {
+            // Processo SO em execução terminou, chamamos o próximo processo a ser executado da fila
+            if( (*processoAnterior).getTipo()  != "usuario") {
+                executaProximoProcesso();
+            // Processo usuário em execução acabou na última iteração, chamamos o próximo e já começamos sua execução
+            } else if ( linhaExecutadaAnteriormente == "HLT") {
+                executaProximoProcesso();
+            }
+            // Processo usuário ainda não terminou de executar
+            else {
+                executaProcessoUsuario(); 
+            }
+                    
+        }
+        // Processo usuário em execução chegou ao fim, desalocamos as memórias
+        if (linhaExecutando == "HLT") {
+            desalocaProcessoUsuario();
+        }
+    }
+
+    void executaProximoProcesso() {
+        linhaExecutando = "";
+        processoExecutando = dispatcher();
         if (processoExecutando == NULL)
-            processoExecutando = dispatcher();
-        else if ((*processoExecutando).getTipo() == "usuario")
+            return;
+        if( (*processoExecutando).getTipo()  == "usuario")
             executaProcessoUsuario();
         else
             executaProcessoSO();
@@ -85,7 +123,7 @@ public:
             criaProcessoUsuario("usuario", programa);
 
             // Atualiza o processo executando
-            processoExecutando = dispatcher();
+            // processoExecutando = dispatcher();
         }
         else if (tipoProcessoExecutando == "kill")
         {
@@ -100,30 +138,24 @@ public:
         int processoExecutandoPID = (*processoExecutando).getPID();
         vector<string> programaExecutando = (*processoExecutando).getPrograma();
         int programaExecutandoPC = (*processoExecutando).getPC();
-        string linhaExecutando = programaExecutando[programaExecutandoPC];
+        linhaExecutando = programaExecutando[programaExecutandoPC];
 
         cout << programaExecutandoPC << " " << linhaExecutando << endl;
-        if (linhaExecutando == "HLT") // Final do programa do processo usuario
-        {
-            // Desaloca memoria do processo usuario
-            bool desalocou = (*memoria).desalocaMemoria(processoExecutandoPID);
-            if (!desalocou)
-            {
-                cerr << "Erro ao desalocar memória para o processo usuário " << processoExecutandoPID << endl;
-                cout << "Não foi possível encerrar o processo usuário " << processoExecutandoPID << ": memória não desalocou!" << endl;
-                return;
-            }
-
-            // Atualiza o processo executando
-            processoExecutando = dispatcher();
-        }
-        else // Processo usuario nao chegou ao fim do programa
-        {
+        if (linhaExecutando != "HLT") // Final do programa do processo usuario
             // Incrementa o PC do processo usario
             (*processoExecutando).incrementaPC();
-        }
+            
+    }
 
-        return;
+    void desalocaProcessoUsuario() {
+        // Desaloca memoria do processo usuario
+        int processoExecutandoPID = (*processoExecutando).getPID();
+        bool desalocou = (*memoria).desalocaMemoria(processoExecutandoPID);
+        if (!desalocou)
+        {
+            cerr << "Erro ao desalocar memória para o processo usuário " << processoExecutandoPID << endl;
+            cout << "Não foi possível encerrar o processo usuário " << processoExecutandoPID << ": memória não desalocou!" << endl;
+        }
     }
 
     Memoria getMemoria()
