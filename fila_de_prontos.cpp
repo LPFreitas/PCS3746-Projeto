@@ -61,11 +61,16 @@ public:
     // Função para imprimir os elementos da fila
     void imprimeFila()
     {
-        if (filaVazia())
+        
+        if (filaVazia()){
             cout << "Fila Vazia" << endl;
+            return;    
+        }
         ElementoFila *atual = primeiroProcesso;
+       
         while (atual != nullptr)
         {
+             
             string tipoProcesso = (atual->processo).getTipo();
             int processoPID = (atual->processo).getPID();
             if (tipoProcesso == "usuario")

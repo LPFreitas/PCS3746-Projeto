@@ -41,7 +41,7 @@ public:
 
     void criaProcessoSO(string tipo, vector<string> programa, int numPosicoesMemoria)
     {
-        Processo *processoSO = new Processo(proxPIDdeUsuario, tipo, programa, numPosicoesMemoria);
+        Processo *processoSO = new Processo( proxPIDdeSO, tipo, programa, numPosicoesMemoria);
         incrementaProximoPIDdeSO();
         (*filaDeProntos).insereNaFila(*processoSO);
     }
