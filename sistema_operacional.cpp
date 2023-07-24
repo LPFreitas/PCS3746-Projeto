@@ -16,11 +16,14 @@ class SistemaOperacional
     Processo *processoExecutando;
     int proxPIDdeUsuario, proxPIDdeSO;
     string linhaExecutando;
+    int contadorExecuta;
+    int robin_cicles;
 
 public:
-    SistemaOperacional(string modo, int tamanhoMemoria = 20)
+    SistemaOperacional(string modo, int robin_cicles = 4, int tamanhoMemoria = 20)
     {
         this->modo = modo;
+        this->robin_cicles = robin_cicles;
         memoria = new Memoria(tamanhoMemoria);
         filaDeProntos = new FilaDeProntos();
         processoExecutando = NULL;
@@ -59,12 +62,18 @@ public:
 
     void executa()
     {
-
-       
-        // cout << "Executando " << (*processoExecutando).getTipo() << " " << (*processoExecutando).getPID() << endl;
-        
         Processo *processoAnterior = processoExecutando;
         string linhaExecutadaAnteriormente = linhaExecutando;
+
+        // cout << "Executando " << (*processoExecutando).getTipo() << " " << (*processoExecutando).getPID() << endl;
+        // if (modo == "robin"){
+        //     if (contadorExecuta == robin_cicles || linhaExecutadaAnteriormente == "HLT"){
+        //         contadorExecuta = 0;
+        //         processoExecutando = dispatcher();
+        //     }
+        // }
+        
+        
         // Nada a executar e nada foi executado
         if (processoAnterior == NULL && filaDeProntos == NULL)
             return;
@@ -74,19 +83,31 @@ public:
             return;
         // Algum processo já foi executado, estando a fila de prontos vazia ou não
         } else {
+            if (modo == "robin"){
+                if (contadorExecuta == robin_cicles || linhaExecutadaAnteriormente == "HLT"){
+                    contadorExecuta = 0;
+                    processoExecutando = dispatcher();
+                }
+            }
+            
             // Processo SO em execução terminou, chamamos o próximo processo a ser executado da fila
             if( (*processoAnterior).getTipo()  != "usuario") {
                 executaProximoProcesso();
-            // Processo usuário em execução acabou na última iteração, chamamos o próximo e já começamos sua execução
-            } else if ( linhaExecutadaAnteriormente == "HLT") {
-                executaProximoProcesso();
-            }
-            // Processo usuário ainda não terminou de executar
+             } 
             else {
-                executaProcessoUsuario(); 
+                // Processo usuário em execução acabou na última iteração, chamamos o próximo e já começamos sua execução
+                if ((contadorExecuta == robin_cicles && modo == "robin") || linhaExecutadaAnteriormente == "HLT") {
+                    executaProximoProcesso();
+                    contadorExecuta = 0;
+                }
+                // Processo usuário ainda não terminou de executar
+                else{
+                    executaProcessoUsuario();
+                }
             }
                     
         }
+
         // Processo usuário em execução chegou ao fim, desalocamos as memórias
         if (linhaExecutando == "HLT") {
             desalocaProcessoUsuario();
@@ -170,11 +191,19 @@ public:
 
     Processo *dispatcher()
     {
-        // FIFO
-        return escalonador();
-
+        if (modo == "fifo")
+            return escalonador();
+        
         // Robin
-        // salva tcb ?
+        Processo *processoAnterior = processoExecutando;
+        if (modo  == "robin"){
+            (*filaDeProntos).insereNaFila(processoAnterior);
+            Processo *processoAtual = escalonador();
+            //linhaExecutando = programaExecutando[(*processoAtual).getPC()]
+            linhaExecutando = "";
+            return 
+            //atualizar a linhaExecutando
+        }
     }
 
     // FIFO
