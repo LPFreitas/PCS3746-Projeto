@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
         else if (!(regex_search(comando, matches, PadraoProximaInstrucao) && matches.size() == 1))
         {
             cout << "Comando inválido" << endl;
+            continue;
         }
 
         // Antes da execucao
