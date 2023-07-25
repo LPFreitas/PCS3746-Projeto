@@ -10,7 +10,7 @@ using namespace std;
 class Processo
 {
 private:
-    int PC, PID, numPosicoesMemoria;
+    int PC, PID, numPosicoesMemoria, processoUsuarioPID;
     string tipo;
     vector<string> programa;
 
@@ -21,9 +21,15 @@ public:
     {
     }
 
-    // SO
+    // SO - create
     Processo(int PID, const string &tipo, const vector<string> &programa, int numPosicoesMemoria)
         : PID(PID), tipo(tipo), programa(programa), numPosicoesMemoria(numPosicoesMemoria)
+    {
+    }
+
+    // SO - kill
+    Processo(int PID, const string &tipo, int processoUsuarioPID)
+        : PID(PID), tipo(tipo), processoUsuarioPID(processoUsuarioPID)
     {
     }
 
@@ -63,6 +69,11 @@ public:
     vector<string> getPrograma()
     {
         return programa;
+    }
+
+    int getProcessoUsuarioPID()
+    {
+        return processoUsuarioPID;
     }
 
     bool compara(Processo p)

@@ -44,11 +44,25 @@ public:
         proxPIDdeSO += 1;
     }
 
-    void criaProcessoSO(string tipo, vector<string> programa, int numPosicoesMemoria)
+    //void criaProcessoSO(string tipo, vector<string> programa, int numPosicoesMemoria)
+    //{
+    //    Processo *processoSO = new Processo(proxPIDdeSO, tipo, programa, numPosicoesMemoria);
+    //    incrementaProximoPIDdeSO();
+    //    (*filaDeProntos).insereNaFila(*processoSO);
+    //}
+
+    void criaProcessoSOCreate(string tipo, vector<string> programa, int numPosicoesMemoria)
     {
-        Processo *processoSO = new Processo(proxPIDdeSO, tipo, programa, numPosicoesMemoria);
+        Processo *processoSOCreate = new Processo(proxPIDdeSO, tipo, programa, numPosicoesMemoria);
         incrementaProximoPIDdeSO();
-        (*filaDeProntos).insereNaFila(*processoSO);
+        (*filaDeProntos).insereNaFila(*processoSOCreate);
+    }
+
+    void criaProcessoSOKill(string tipo, int processoUsuarioPID)
+    {
+        Processo *processoSOKill = new Processo(proxPIDdeSO, tipo, processoUsuarioPID);
+        incrementaProximoPIDdeSO();
+        (*filaDeProntos).insereNaFila(*processoSOKill);
     }
 
     void criaProcessoUsuario(string tipo, vector<string> programa)
@@ -130,8 +144,12 @@ public:
         {
             // PENDENTE
 
-            // Desaloca a memória
+            int processoUsuarioPID = (*processoExecutando).getProcessoUsuarioPID();
+            
             // Mata processo do tipo usuário - mataProcessoUsuario();
+            mataProcessoUsuario(processoUsuarioPID);
+
+            // Desaloca a memória
         }
     }
 

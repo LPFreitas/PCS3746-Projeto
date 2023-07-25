@@ -58,13 +58,15 @@ int main(int argc, char *argv[])
             vector<string> programa = leArquivo(arquivoPrograma);
 
             // Cria processo de SO do tipo create
-            sistemaOperacional.criaProcessoSO("create", programa, numPosicoesMemoria);
+            sistemaOperacional.criaProcessoSOCreate("create", programa, numPosicoesMemoria);
         }
         // kill
         else if (regex_search(comando, matches, PadraoComandoKill) && matches.size() == 2)
         {
             int PID = stoi(matches[1]);
-            // PENDENTE
+
+            // Cria processo de SO do tipo kill
+            sistemaOperacional.criaProcessoSOKill("kill", PID);
         }
         else if (!(regex_search(comando, matches, PadraoProximaInstrucao) && matches.size() == 1))
         {
