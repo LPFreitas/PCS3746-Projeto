@@ -178,18 +178,15 @@ public:
         Processo *processoAnterior = processoExecutando;
         Processo *processoProximo = escalonador();
 
-        // se nao existe proximo, o processo atual pode continuar executando
+        // Se não existe próximo, o processo atual pode continuar executando
         if (processoProximo == nullptr)
-        {
             return processoAnterior;
-        }
 
         (*filaDeProntos).insereNaFila(*processoAnterior);
 
         return processoProximo;
     }
 
-    // FIFO
     Processo *escalonador()
     {
         // Se fila estiver vazia, não há processos a executar
