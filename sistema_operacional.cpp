@@ -140,12 +140,32 @@ public:
         int programaExecutandoPC = (*processoExecutando).getPC();
         linhaExecutando = programaExecutando[programaExecutandoPC];
 
-        cout << programaExecutandoPC << " " << linhaExecutando << endl;
+        imprimeProgramaEmExecucao(programaExecutando, programaExecutandoPC);
         if (linhaExecutando != "HLT") // Final do programa do processo usuario
-            // Incrementa o PC do processo usario
-            (*processoExecutando).incrementaPC();
-            
+            (*processoExecutando).incrementaPC();    
     }
+
+    void imprimeProgramaEmExecucao(const vector<string> &programa, int linhaAtual)
+    {
+         // Imprime o cabeçalho
+    cout << "+--------------------+" << endl;
+    cout << "|       Status       |" << endl;
+    cout << "+--------------------+" << endl;
+
+     // Imprime o programa com a seta na linha atual
+    for (int i = 0; i < programa.size(); ++i)
+    {
+        if (i == linhaAtual)
+            cout << "| " << left << setw(13) << programa[i] << " <--- |" << endl;
+        else
+            cout << "| " << left << setw(18) << programa[i] << " |" << endl;
+    }
+
+    // Imprime a moldura inferior do programa
+    cout << "+--------------------+" << endl;
+    }
+
+
 
     void desalocaProcessoUsuario() {
         // Desaloca memoria do processo usuario
