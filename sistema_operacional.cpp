@@ -17,6 +17,8 @@ class SistemaOperacional
     Processo *processoExecutando;
     int proxPIDdeUsuario, proxPIDdeSO;
     string linhaExecutando;
+    int quantum;
+    int contadorRelogio;
 
 public:
     SistemaOperacional(string modo, int tamanhoMemoria = 20)
@@ -28,6 +30,8 @@ public:
         proxPIDdeUsuario = 1;
         proxPIDdeSO = 1;
         linhaExecutando = "";
+        quantum = 2;
+        contadorRelogio = 0;
     }
 
     void incrementaProximoPIDdeUsuario()
@@ -69,18 +73,15 @@ public:
             return;
         // Fila de prontos com processo, mas nenhum executado (Ex.: primeiro create do sistema vai executar)
         else if (processoAnterior == NULL)
-        {
             executaProximoProcesso();
-            return;
-        }
         // Algum processo já foi executado, estando a fila de prontos vazia ou não
         else
         {
-            // Processo SO em execução terminou, chamamos o próximo processo a ser executado da fila
-            if ((*processoAnterior).getTipo() != "usuario")
-                executaProximoProcesso();
-            // Processo usuário em execução acabou na última iteração, chamamos o próximo e já começamos sua execução
-            else if (linhaExecutadaAnteriormente == "HLT")
+            bool processoAnteriorTerminou = (*processoAnterior).getTipo() != "usuario" || linhaExecutadaAnteriormente == "HLT";
+            bool robinTerminou = modo == "robin" && contadorRelogio == quantum;
+
+            // Processo anterior em execução terminou, chamamos o próximo processo a ser executado da fila e já executa
+            if (processoAnteriorTerminou || robinTerminou)
                 executaProximoProcesso();
             // Processo usuário ainda não terminou de executar
             else
@@ -90,12 +91,15 @@ public:
         // Processo usuário em execução chegou ao fim, desalocamos as memórias
         if (linhaExecutando == "HLT")
             desalocaProcessoUsuario();
+
+        contadorRelogio++;
     }
 
     void executaProximoProcesso()
     {
-        linhaExecutando = "";
         processoExecutando = dispatcher();
+        linhaExecutando = "";
+        contadorRelogio = 0;
         if (processoExecutando == NULL)
             return;
         if ((*processoExecutando).getTipo() == "usuario")
@@ -168,11 +172,21 @@ public:
 
     Processo *dispatcher()
     {
-        // FIFO
-        return escalonador();
+        if (processoExecutando == NULL || modo == "fifo" || (*processoExecutando).getTipo() != "usuario" || linhaExecutando == "HLT")
+            return escalonador();
 
-        // Robin
-        // salva tcb ?
+        Processo *processoAnterior = processoExecutando;
+        Processo *processoProximo = escalonador();
+
+        // se nao existe proximo, o processo atual pode continuar executando
+        if (processoProximo == nullptr)
+        {
+            return processoAnterior;
+        }
+
+        (*filaDeProntos).insereNaFila(*processoAnterior);
+
+        return processoProximo;
     }
 
     // FIFO
