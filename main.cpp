@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        // Le comando do socket
+        // Lê comando do socket
         if (leComando())
         {
             // Fecha os sockets se ocorreu erro na leitura do comando
@@ -42,10 +42,6 @@ int main(int argc, char *argv[])
         }
 
         // Decodifica comando
-        // > create -m [numero de posicoes memoria] -p [arquivo programa]
-        // > kill [PID]
-        // > n
-
         string comando = buffer;
 
         regex PadraoComandoCreate("create -m (\\d+) -p ([^\\s]+)");
@@ -53,9 +49,10 @@ int main(int argc, char *argv[])
         regex PadraoProximaInstrucao("n");
         smatch matches;
 
+        // create
         if (regex_search(comando, matches, PadraoComandoCreate) && matches.size() == 3)
         {
-            // Obtem do comando numPosicoesMemoria e programa
+            // Obtém do comando numPosicoesMemoria e programa
             int numPosicoesMemoria = stoi(matches[1]);
             string arquivoPrograma = matches[2];
             vector<string> programa = leArquivo(arquivoPrograma);
@@ -63,9 +60,11 @@ int main(int argc, char *argv[])
             // Cria processo de SO do tipo create
             sistemaOperacional.criaProcessoSO("create", programa, numPosicoesMemoria);
         }
+        // kill
         else if (regex_search(comando, matches, PadraoComandoKill) && matches.size() == 2)
         {
             int PID = stoi(matches[1]);
+            // PENDENTE
         }
         else if (!(regex_search(comando, matches, PadraoProximaInstrucao) && matches.size() == 1))
         {
@@ -73,21 +72,19 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        // Antes da execucao
-        // cout << "Antes da execução: " << endl;
-        // sistemaOperacional.getMemoria().printMapaDeBits();
-        // sistemaOperacional.getFilaDeProntos().imprimeFila();
-        cout << endl << "<------------------------>" << endl;
-        cout << "|" << "      Iteração" << "          |" << endl;
-        cout <<  "<------------------------>" << endl << endl;
+        // Imprime cabeçalho da iteração
+        cout << endl
+             << "<------------------------>" << endl;
+        cout << "|        Iteração        |" << endl;
+        cout << "<------------------------>" << endl
+             << endl;
+
+        // Executa a próxima iteração
         sistemaOperacional.executa();
 
-        // Depois da execucao
-        
+        // Atualiza interface
         sistemaOperacional.getMemoria().printMapaDeBits();
         sistemaOperacional.getFilaDeProntos().imprimeFila();
-
-        // Atualiza interface
     }
 
     // Fecha os sockets
@@ -157,7 +154,7 @@ int leComando()
     }
     else
     {
-        cout << "Cliente: " << buffer << endl;
+        cout << "Comando: " << buffer << endl;
     }
 
     return 0;

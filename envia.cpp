@@ -38,7 +38,7 @@ int main()
     // Envia dados para o servidor
     while (true)
     {
-        cout << "Mensagem: ";
+        cout << "Comando: ";
         cin.getline(buffer, sizeof(buffer));
 
         ssize_t bytesSent = send(clientSocket, buffer, strlen(buffer), 0);

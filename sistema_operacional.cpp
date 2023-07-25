@@ -2,7 +2,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <set>
 #include <utility>
 
 #include "memoria.cpp"
@@ -43,7 +42,7 @@ public:
 
     void criaProcessoSO(string tipo, vector<string> programa, int numPosicoesMemoria)
     {
-        Processo *processoSO = new Processo( proxPIDdeSO, tipo, programa, numPosicoesMemoria);
+        Processo *processoSO = new Processo(proxPIDdeSO, tipo, programa, numPosicoesMemoria);
         incrementaProximoPIDdeSO();
         (*filaDeProntos).insereNaFila(*processoSO);
     }
@@ -57,50 +56,49 @@ public:
 
     void mataProcessoUsuario(int PID) // ?
     {
+        // PENDENTE
     }
 
     void executa()
     {
-
-       
-        // cout << "Executando " << (*processoExecutando).getTipo() << " " << (*processoExecutando).getPID() << endl;
-        
         Processo *processoAnterior = processoExecutando;
         string linhaExecutadaAnteriormente = linhaExecutando;
+
         // Nada a executar e nada foi executado
         if (processoAnterior == NULL && filaDeProntos == NULL)
             return;
-        // Fila de prontos com processo, mas nenhum executado (Ex.: primeiro create do sistema vai executar) 
-        else if (processoAnterior == NULL) {
+        // Fila de prontos com processo, mas nenhum executado (Ex.: primeiro create do sistema vai executar)
+        else if (processoAnterior == NULL)
+        {
             executaProximoProcesso();
             return;
+        }
         // Algum processo já foi executado, estando a fila de prontos vazia ou não
-        } else {
+        else
+        {
             // Processo SO em execução terminou, chamamos o próximo processo a ser executado da fila
-            if( (*processoAnterior).getTipo()  != "usuario") {
+            if ((*processoAnterior).getTipo() != "usuario")
                 executaProximoProcesso();
             // Processo usuário em execução acabou na última iteração, chamamos o próximo e já começamos sua execução
-            } else if ( linhaExecutadaAnteriormente == "HLT") {
+            else if (linhaExecutadaAnteriormente == "HLT")
                 executaProximoProcesso();
-            }
             // Processo usuário ainda não terminou de executar
-            else {
-                executaProcessoUsuario(); 
-            }
-                    
+            else
+                executaProcessoUsuario();
         }
+
         // Processo usuário em execução chegou ao fim, desalocamos as memórias
-        if (linhaExecutando == "HLT") {
+        if (linhaExecutando == "HLT")
             desalocaProcessoUsuario();
-        }
     }
 
-    void executaProximoProcesso() {
+    void executaProximoProcesso()
+    {
         linhaExecutando = "";
         processoExecutando = dispatcher();
         if (processoExecutando == NULL)
             return;
-        if( (*processoExecutando).getTipo()  == "usuario")
+        if ((*processoExecutando).getTipo() == "usuario")
             executaProcessoUsuario();
         else
             executaProcessoSO();
@@ -111,7 +109,7 @@ public:
         string tipoProcessoExecutando = (*processoExecutando).getTipo();
         if (tipoProcessoExecutando == "create")
         {
-            // Aloca memoria para o processo de usuario a ser criado
+            // Aloca memória para o processo de usuário a ser criado
             bool alocou = (*memoria).alocaMemoria((*processoExecutando).getNumPosicoesMemoria(), proxPIDdeUsuario);
             if (!alocou)
             {
@@ -120,92 +118,35 @@ public:
                 return;
             }
 
-            // Cria processo do tipo usuario
+            // Cria processo do tipo usuário
             vector<string> programa = (*processoExecutando).getPrograma();
             criaProcessoUsuario("usuario", programa);
-
-            // Atualiza o processo executando
-            // processoExecutando = dispatcher();
         }
         else if (tipoProcessoExecutando == "kill")
         {
-            // Robin
-            // Desaloca a memoria
-            // mata processo do tipo usuario - mataProcessoUsuario();
+            // PENDENTE
+
+            // Desaloca a memória
+            // Mata processo do tipo usuário - mataProcessoUsuario();
         }
     }
 
     void executaProcessoUsuario()
     {
-        int processoExecutandoPID = (*processoExecutando).getPID();
         vector<string> programaExecutando = (*processoExecutando).getPrograma();
         int programaExecutandoPC = (*processoExecutando).getPC();
         linhaExecutando = programaExecutando[programaExecutandoPC];
 
-        // imprime o status do programa 
-        imprimeProgramaEmExecucao(programaExecutando, programaExecutandoPC);
-        // encontra quais registradores o processo usa e usa para imprimir a TCB
-        set<string> registradoresEncontrados = encontraRegistradores(programaExecutando);
-        imprimeTCB(registradoresEncontrados, processoExecutandoPID, programaExecutandoPC);
+        // Imprime Status e TCB do processo executando
+        (*processoExecutando).imprimeStatusTCB();
 
-        if (linhaExecutando != "HLT") // Final do programa do processo usuario
-            (*processoExecutando).incrementaPC();    
+        if (linhaExecutando != "HLT") // Final do programa do processo usuário
+            (*processoExecutando).incrementaPC();
     }
 
-    void imprimeProgramaEmExecucao(const vector<string> &programa, int linhaAtual)
+    void desalocaProcessoUsuario()
     {
-         // Imprime o cabeçalho
-    cout << "+--------------------+" << endl;
-    cout << "|       Status       |" << endl;
-    cout << "+--------------------+" << endl;
-
-     // Imprime o programa com a seta na linha atual
-    for (int i = 0; i < programa.size(); ++i)
-    {
-        if (i == linhaAtual)
-            cout << "| " << left << setw(13) << programa[i] << " <--- |" << endl;
-        else
-            cout << "| " << left << setw(18) << programa[i] << " |" << endl;
-    }
-
-    // Imprime a moldura inferior do programa
-    cout << "+--------------------+" << endl;
-    }
-
-
-    set<string> encontraRegistradores(const vector<string>& programa) {
-        set<string> registradores;
-        vector<string> registradoresPossiveis = { "AX", "BX", "CX", "DX" };
-
-        for (const string& linha : programa) {
-            for (const string& registrador : registradoresPossiveis) {
-                if (linha.find(registrador) != string::npos) {
-                    registradores.insert(registrador);
-                }
-            }
-        }
-
-        return registradores;
-    }
-
-    void imprimeTCB(const set<string>& registradoresEncontrados, int PID, int PC) {
-        cout << endl;
-        cout << "+----------------------------------+" << endl;
-        cout << "|          TCB do Processo         |" << endl;
-        cout << "+----------------------------------+" << endl;
-        cout << "| PID: " << setw(27) << PID << " |" << endl;
-        
-        // cout << "PID: " << PID << endl;
-        for (const string& registrador : registradoresEncontrados) {
-             cout << "| REG " << setw(28) << registrador << " |" << endl;
-        }
-         cout << "| PC: " << setw(28) << PC << " |" << endl;
-        cout << "+----------------------------------+" << endl;
-        cout << endl;
-    }
-
-    void desalocaProcessoUsuario() {
-        // Desaloca memoria do processo usuario
+        // Desaloca memória do processo usuário
         int processoExecutandoPID = (*processoExecutando).getPID();
         bool desalocou = (*memoria).desalocaMemoria(processoExecutandoPID);
         if (!desalocou)
@@ -237,7 +178,7 @@ public:
     // FIFO
     Processo *escalonador()
     {
-        // Se fila estiver vazia, nao ha processos a executar
+        // Se fila estiver vazia, não há processos a executar
         if ((*filaDeProntos).tamanho() == 0)
             return NULL;
 

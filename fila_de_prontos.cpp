@@ -33,9 +33,7 @@ public:
     {
         ElementoFila *novoElementoFila = new ElementoFila(processo);
         if (filaVazia())
-        {
             primeiroProcesso = ultimoProcesso = novoElementoFila;
-        }
         else
         {
             ultimoProcesso->proximoProcesso = novoElementoFila;
@@ -47,9 +45,7 @@ public:
     Processo *tiraDaFila()
     {
         if (filaVazia())
-        {
             throw runtime_error("Fila de prontos vazia. Impossível retirar um processo.");
-        }
 
         Processo *processo = new Processo(primeiroProcesso->processo);
         ElementoFila *temp = primeiroProcesso;
@@ -61,24 +57,38 @@ public:
     // Função para imprimir os elementos da fila
     void imprimeFila()
     {
-        
-        if (filaVazia()){
-            cout << "Fila Vazia" << endl;
-            return;    
+        // Imprime o cabeçalho da fila de prontos
+        cout << "+------------------------+" << endl;
+        cout << "|    Fila de Prontos     |" << endl;
+        cout << "+------------------------+" << endl;
+
+        if (filaVazia())
+        {
+            cout << "|         Vazia          |" << endl;
+            cout << "+------------------------+" << endl;
+            cout << endl;
+            return;
         }
+
         ElementoFila *atual = primeiroProcesso;
-       
+
         while (atual != nullptr)
         {
-             
+            // Obtém tipo e PID do processo
             string tipoProcesso = (atual->processo).getTipo();
             int processoPID = (atual->processo).getPID();
+
             if (tipoProcesso == "usuario")
-                cout << "PID " << processoPID << " | ";
-            else
-                cout << tipoProcesso << " " << processoPID << " | ";
+                cout << "| PID " << setw(18) << processoPID << " |" << endl;
+            else if (tipoProcesso == "create")
+                cout << "| create " << setw(15) << processoPID << " |" << endl;
+            else if (tipoProcesso == "kill")
+                cout << "| kill " << setw(17) << processoPID << " |" << endl;
             atual = atual->proximoProcesso;
         }
+
+        // Imprime a moldura inferior da fila de prontos
+        cout << "+------------------------+" << endl;
         cout << endl;
     }
 
@@ -96,9 +106,7 @@ public:
                     primeiroProcesso = atual->proximoProcesso;
                 }
                 else
-                {
                     anterior->proximoProcesso = atual->proximoProcesso;
-                }
                 delete atual;
                 break;
             }
