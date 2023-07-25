@@ -1,7 +1,9 @@
-#include <string>
-#include <map>
-#include <utility>
 #include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+#include <set>
+#include <utility>
 
 #include "memoria.cpp"
 #include "fila_de_prontos.cpp"
@@ -140,7 +142,12 @@ public:
         int programaExecutandoPC = (*processoExecutando).getPC();
         linhaExecutando = programaExecutando[programaExecutandoPC];
 
+        // imprime o status do programa 
         imprimeProgramaEmExecucao(programaExecutando, programaExecutandoPC);
+        // encontra quais registradores o processo usa e usa para imprimir a TCB
+        set<string> registradoresEncontrados = encontraRegistradores(programaExecutando);
+        imprimeTCB(registradoresEncontrados, processoExecutandoPID, programaExecutandoPC);
+
         if (linhaExecutando != "HLT") // Final do programa do processo usuario
             (*processoExecutando).incrementaPC();    
     }
@@ -166,6 +173,36 @@ public:
     }
 
 
+    set<string> encontraRegistradores(const vector<string>& programa) {
+        set<string> registradores;
+        vector<string> registradoresPossiveis = { "AX", "BX", "CX", "DX" };
+
+        for (const string& linha : programa) {
+            for (const string& registrador : registradoresPossiveis) {
+                if (linha.find(registrador) != string::npos) {
+                    registradores.insert(registrador);
+                }
+            }
+        }
+
+        return registradores;
+    }
+
+    void imprimeTCB(const set<string>& registradoresEncontrados, int PID, int PC) {
+        cout << endl;
+        cout << "+----------------------------------+" << endl;
+        cout << "|          TCB do Processo         |" << endl;
+        cout << "+----------------------------------+" << endl;
+        cout << "| PID: " << setw(27) << PID << " |" << endl;
+        
+        // cout << "PID: " << PID << endl;
+        for (const string& registrador : registradoresEncontrados) {
+             cout << "| REG " << setw(28) << registrador << " |" << endl;
+        }
+         cout << "| PC: " << setw(28) << PC << " |" << endl;
+        cout << "+----------------------------------+" << endl;
+        cout << endl;
+    }
 
     void desalocaProcessoUsuario() {
         // Desaloca memoria do processo usuario
