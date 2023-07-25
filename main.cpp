@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
         // sistemaOperacional.getMemoria().printMapaDeBits();
         // sistemaOperacional.getFilaDeProntos().imprimeFila();
         cout << endl << "<------------------------>" << endl;
-        cout << "|" << setw(10) << "      Iteração" << setw(11) << "|" << endl;
+        cout << "|" << "      Iteração" << "          |" << endl;
         cout <<  "<------------------------>" << endl << endl;
         sistemaOperacional.executa();
 
