@@ -74,15 +74,16 @@ int main(int argc, char *argv[])
         }
 
         // Antes da execucao
-        cout << "Antes da execução: " << endl;
-        sistemaOperacional.getMemoria().printMapaDeBits();
-        sistemaOperacional.getFilaDeProntos().imprimeFila();
-
+        // cout << "Antes da execução: " << endl;
+        // sistemaOperacional.getMemoria().printMapaDeBits();
+        // sistemaOperacional.getFilaDeProntos().imprimeFila();
+        cout << endl << "<------------------------>" << endl;
+        cout << "|" << "      Iteração" << "          |" << endl;
+        cout <<  "<------------------------>" << endl << endl;
         sistemaOperacional.executa();
 
         // Depois da execucao
-        cout << endl
-             << "Depois da execução: " << endl;
+        
         sistemaOperacional.getMemoria().printMapaDeBits();
         sistemaOperacional.getFilaDeProntos().imprimeFila();
 

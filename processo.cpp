@@ -13,12 +13,13 @@ private:
     // map<string, int> regs;
 
 public:
+    // Usuário
     Processo(int PID, const string &tipo, const vector<string> &programa)
-        : PID(PID), tipo(tipo), programa(programa)
+        : PC(0), PID(PID), tipo(tipo), programa(programa)
     {
-        PC = 0;
     }
 
+    // SO
     Processo(int PID, const string &tipo, const vector<string> &programa, int numPosicoesMemoria)
         : PID(PID), tipo(tipo), programa(programa), numPosicoesMemoria(numPosicoesMemoria)
     {
@@ -46,6 +47,9 @@ public:
 
     int getNumPosicoesMemoria()
     {
+        // if (tipo == "usuario")
+        //     return -1;
+
         return numPosicoesMemoria;
     }
 
