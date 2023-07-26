@@ -38,7 +38,7 @@ public:
         linhaExecutando = "";
         quantum = 2;
         contadorRelogioQuantum = 0;
-        tempoCompactacao = 10;
+        tempoCompactacao = 4;
         contadorRelogioCompactacao = 0;
     }
 
@@ -133,6 +133,10 @@ public:
     void executaProcessoSO()
     {
         string tipoProcessoExecutando = (*processoExecutando).getTipo();
+        int processoExecutandoPID = (*processoExecutando).getPID();
+
+        cout << "Executando processo " << tipoProcessoExecutando << " " << processoExecutandoPID << endl
+             << endl;
 
         if (tipoProcessoExecutando == "create")
         {
@@ -140,8 +144,10 @@ public:
             bool alocou = (*memoria).alocaMemoria((*processoExecutando).getNumPosicoesMemoria(), proxPIDdeUsuario);
             if (!alocou)
             {
-                cerr << "Erro ao alocar memória para o processo usuário " << proxPIDdeUsuario << ": memória insuficiente!" << endl;
-                cout << "Não foi possível criar o processo usuário " << proxPIDdeUsuario << endl;
+                cerr << "Erro ao alocar memória para o processo usuário " << proxPIDdeUsuario << ": memória insuficiente!" << endl
+                     << endl;
+                cout << "Não foi possível criar o processo usuário " << proxPIDdeUsuario << endl
+                     << endl;
                 return;
             }
 
@@ -166,8 +172,10 @@ public:
             bool desalocou = (*memoria).desalocaMemoria(processoUsuarioPID);
             if (!desalocou)
             {
-                cerr << "Erro ao desalocar memória para o processo usuário " << processoUsuarioPID << endl;
-                cout << "Não foi possível matar o processo usuário " << processoUsuarioPID << endl;
+                cerr << "Erro ao desalocar memória para o processo usuário " << processoUsuarioPID << endl
+                     << endl;
+                cout << "Não foi possível matar o processo usuário " << processoUsuarioPID << endl
+                     << endl;
                 return;
             }
 
@@ -196,8 +204,10 @@ public:
         bool desalocou = (*memoria).desalocaMemoria(processoExecutandoPID);
         if (!desalocou)
         {
-            cerr << "Erro ao desalocar memória para o processo usuário " << processoExecutandoPID << endl;
-            cout << "Não foi possível encerrar o processo usuário " << processoExecutandoPID << ": memória não desalocou!" << endl;
+            cerr << "Erro ao desalocar memória para o processo usuário " << processoExecutandoPID << endl
+                 << endl;
+            cout << "Não foi possível encerrar o processo usuário " << processoExecutandoPID << ": memória não desalocou!" << endl
+                 << endl;
         }
     }
 
