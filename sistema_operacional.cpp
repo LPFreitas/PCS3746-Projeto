@@ -157,7 +157,8 @@ public:
             // Verifica se processo usuário está na fila de prontos
             if (!(*filaDeProntos).estaPresente("usuario", processoUsuarioPID))
             {
-                cout << "O processo usuário " << processoUsuarioPID << "ainda não foi criado ou já executou!" << endl;
+                cout << "O processo usuário " << processoUsuarioPID << " ainda não foi criado ou já executou!" << endl
+                     << endl;
                 return;
             }
 
