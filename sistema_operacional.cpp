@@ -17,8 +17,14 @@ class SistemaOperacional
     Processo *processoExecutando;
     int proxPIDdeUsuario, proxPIDdeSO;
     string linhaExecutando;
+
+    // Atributos para modo robin
     int quantum;
-    int contadorRelogio;
+    int contadorRelogioQuantum;
+
+    // Atributo para compactação
+    int tempoCompactacao;
+    int contadorRelogioCompactacao;
 
 public:
     SistemaOperacional(string modo, int tamanhoMemoria = 20)
@@ -31,7 +37,9 @@ public:
         proxPIDdeSO = 1;
         linhaExecutando = "";
         quantum = 2;
-        contadorRelogio = 0;
+        contadorRelogioQuantum = 0;
+        tempoCompactacao = 10;
+        contadorRelogioCompactacao = 0;
     }
 
     void incrementaProximoPIDdeUsuario()
@@ -43,13 +51,6 @@ public:
     {
         proxPIDdeSO += 1;
     }
-
-    //void criaProcessoSO(string tipo, vector<string> programa, int numPosicoesMemoria)
-    //{
-    //    Processo *processoSO = new Processo(proxPIDdeSO, tipo, programa, numPosicoesMemoria);
-    //    incrementaProximoPIDdeSO();
-    //    (*filaDeProntos).insereNaFila(*processoSO);
-    //}
 
     void criaProcessoSOCreate(string tipo, vector<string> programa, int numPosicoesMemoria)
     {
@@ -72,9 +73,9 @@ public:
         (*filaDeProntos).insereNaFila(*processoUsuario);
     }
 
-    void mataProcessoUsuario(int PID) // ?
+    void mataProcessoUsuario(string tipo, int PID)
     {
-        // PENDENTE
+        (*filaDeProntos).removeElementoFila(tipo, PID);
     }
 
     void executa()
@@ -92,7 +93,7 @@ public:
         else
         {
             bool processoAnteriorTerminou = (*processoAnterior).getTipo() != "usuario" || linhaExecutadaAnteriormente == "HLT";
-            bool robinTerminou = modo == "robin" && contadorRelogio == quantum;
+            bool robinTerminou = modo == "robin" && contadorRelogioQuantum == quantum;
 
             // Processo anterior em execução terminou, chamamos o próximo processo a ser executado da fila e já executa
             if (processoAnteriorTerminou || robinTerminou)
@@ -106,14 +107,18 @@ public:
         if (linhaExecutando == "HLT")
             desalocaProcessoUsuario();
 
-        contadorRelogio++;
+        contadorRelogioQuantum += 1;
+        contadorRelogioCompactacao += 1;
+
+        if (contadorRelogioCompactacao == tempoCompactacao)
+            (*memoria).compactaMemoria();
     }
 
     void executaProximoProcesso()
     {
         processoExecutando = dispatcher();
         linhaExecutando = "";
-        contadorRelogio = 0;
+        contadorRelogioQuantum = 0;
         if (processoExecutando == NULL)
             return;
         if ((*processoExecutando).getTipo() == "usuario")
@@ -125,6 +130,7 @@ public:
     void executaProcessoSO()
     {
         string tipoProcessoExecutando = (*processoExecutando).getTipo();
+
         if (tipoProcessoExecutando == "create")
         {
             // Aloca memória para o processo de usuário a ser criado
@@ -142,14 +148,27 @@ public:
         }
         else if (tipoProcessoExecutando == "kill")
         {
-            // PENDENTE
-
+            // Obtém PID do processo usuário a ser encerrado
             int processoUsuarioPID = (*processoExecutando).getProcessoUsuarioPID();
-            
-            // Mata processo do tipo usuário - mataProcessoUsuario();
-            mataProcessoUsuario(processoUsuarioPID);
 
-            // Desaloca a memória
+            // Verifica se processo usuário está na fila de prontos
+            if (!(*filaDeProntos).estaPresente("usuario", processoUsuarioPID))
+            {
+                cout << "O processo usuário " << processoUsuarioPID << "ainda não foi criado ou já executou!" << endl;
+                return;
+            }
+
+            // Desaloca a memória do processo usuário
+            bool desalocou = (*memoria).desalocaMemoria(processoUsuarioPID);
+            if (!desalocou)
+            {
+                cerr << "Erro ao desalocar memória para o processo usuário " << processoUsuarioPID << endl;
+                cout << "Não foi possível matar o processo usuário " << processoUsuarioPID << endl;
+                return;
+            }
+
+            // Mata o processo usuário
+            mataProcessoUsuario("usuário", processoUsuarioPID);
         }
     }
 

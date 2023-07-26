@@ -76,9 +76,9 @@ public:
         return processoUsuarioPID;
     }
 
-    bool compara(Processo p)
+    bool compara(string tipo, int PID)
     {
-        return p.getTipo() == tipo && p.getPID() == PID;
+        return this->tipo == tipo && this->PID == PID;
     }
 
     void imprimeStatusTCB()

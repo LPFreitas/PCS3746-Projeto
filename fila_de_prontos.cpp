@@ -28,6 +28,18 @@ public:
         return primeiroProcesso == nullptr;
     }
 
+    bool estaPresente(string tipo, int PID)
+    {
+        ElementoFila *atual = primeiroProcesso;
+        while (atual)
+        {
+            if ((atual->processo).compara(tipo, PID))
+                return true;
+            atual = atual->proximoProcesso;
+        }
+        return false;
+    }
+
     // Insere um elemento no final da fila
     void insereNaFila(Processo processo)
     {
@@ -92,13 +104,13 @@ public:
         cout << endl;
     }
 
-    void removeElementoFila(Processo processoVitima)
+    void removeElementoFila(string tipo, int PID)
     {
         ElementoFila *atual = primeiroProcesso;
         ElementoFila *anterior = nullptr;
         while (atual != nullptr)
         {
-            if ((atual->processo).compara(processoVitima))
+            if ((atual->processo).compara(tipo, PID))
             {
                 if (anterior == nullptr)
                 {
