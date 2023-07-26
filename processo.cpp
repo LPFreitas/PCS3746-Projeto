@@ -22,8 +22,8 @@ public:
     }
 
     // SO - create
-    Processo(int PID, const string &tipo, const vector<string> &programa, int numPosicoesMemoria)
-        : PID(PID), tipo(tipo), programa(programa), numPosicoesMemoria(numPosicoesMemoria)
+    Processo(int PID, const string &tipo, const vector<string> &programa, int numPosicoesMemoria, int processoUsuarioPID)
+        : PID(PID), tipo(tipo), programa(programa), numPosicoesMemoria(numPosicoesMemoria), processoUsuarioPID(processoUsuarioPID)
     {
     }
 

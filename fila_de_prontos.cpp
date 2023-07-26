@@ -86,16 +86,23 @@ public:
 
         while (atual != nullptr)
         {
-            // Obtém tipo e PID do processo
+            // Obtém tipo do processo
             string tipoProcesso = (atual->processo).getTipo();
-            int processoPID = (atual->processo).getPID();
 
             if (tipoProcesso == "usuario")
+            {
+                int processoPID = (atual->processo).getPID();
                 cout << "| PID " << setw(18) << processoPID << " |" << endl;
-            else if (tipoProcesso == "create")
-                cout << "| create " << setw(15) << processoPID << " |" << endl;
-            else if (tipoProcesso == "kill")
-                cout << "| kill " << setw(17) << processoPID << " |" << endl;
+            }
+            else
+            {
+                int processoUsuarioPID = (atual->processo).getProcessoUsuarioPID();
+                if (tipoProcesso == "create")
+                    cout << "| create " << setw(15) << processoUsuarioPID << " |" << endl;
+                else if (tipoProcesso == "kill")
+                    cout << "| kill " << setw(17) << processoUsuarioPID << " |" << endl;
+            }
+
             atual = atual->proximoProcesso;
         }
 

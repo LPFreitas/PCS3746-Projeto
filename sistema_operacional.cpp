@@ -15,7 +15,7 @@ class SistemaOperacional
     Memoria *memoria;
     FilaDeProntos *filaDeProntos;
     Processo *processoExecutando;
-    int proxPIDdeUsuario, proxPIDdeSO;
+    int proxPIDdeUsuario, proxPIDdeUsuarioAux, proxPIDdeSO;
     string linhaExecutando;
 
     // Atributos para modo robin
@@ -34,6 +34,7 @@ public:
         filaDeProntos = new FilaDeProntos();
         processoExecutando = NULL;
         proxPIDdeUsuario = 1;
+        proxPIDdeUsuarioAux = 1;
         proxPIDdeSO = 1;
         linhaExecutando = "";
         quantum = 2;
@@ -42,34 +43,45 @@ public:
         contadorRelogioCompactacao = 0;
     }
 
-    void incrementaProximoPIDdeUsuario()
+    void incrementaProxPIDdeUsuario()
     {
         proxPIDdeUsuario += 1;
     }
 
-    void incrementaProximoPIDdeSO()
+    void incrementaProxPIDdeUsuarioAux()
+    {
+        proxPIDdeUsuarioAux += 1;
+    }
+
+    void decrementaProxPIDdeUsuarioAux()
+    {
+        proxPIDdeUsuarioAux -= 1;
+    }
+
+    void incrementaProxPIDdeSO()
     {
         proxPIDdeSO += 1;
     }
 
     void criaProcessoSOCreate(string tipo, vector<string> programa, int numPosicoesMemoria)
     {
-        Processo *processoSOCreate = new Processo(proxPIDdeSO, tipo, programa, numPosicoesMemoria);
-        incrementaProximoPIDdeSO();
+        Processo *processoSOCreate = new Processo(proxPIDdeSO, tipo, programa, numPosicoesMemoria, proxPIDdeUsuarioAux);
+        incrementaProxPIDdeUsuarioAux();
+        incrementaProxPIDdeSO();
         (*filaDeProntos).insereNaFila(*processoSOCreate);
     }
 
     void criaProcessoSOKill(string tipo, int processoUsuarioPID)
     {
         Processo *processoSOKill = new Processo(proxPIDdeSO, tipo, processoUsuarioPID);
-        incrementaProximoPIDdeSO();
+        incrementaProxPIDdeSO();
         (*filaDeProntos).insereNaFila(*processoSOKill);
     }
 
     void criaProcessoUsuario(string tipo, vector<string> programa)
     {
         Processo *processoUsuario = new Processo(proxPIDdeUsuario, tipo, programa);
-        incrementaProximoPIDdeUsuario();
+        incrementaProxPIDdeUsuario();
         (*filaDeProntos).insereNaFila(*processoUsuario);
     }
 
@@ -148,6 +160,8 @@ public:
                      << endl;
                 cout << "Não foi possível criar o processo usuário " << proxPIDdeUsuario << endl
                      << endl;
+                // Decrementa variável auxiliar para manter coerência
+                decrementaProxPIDdeUsuarioAux();
                 return;
             }
 
