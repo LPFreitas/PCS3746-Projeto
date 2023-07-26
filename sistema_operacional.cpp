@@ -111,7 +111,10 @@ public:
         contadorRelogioCompactacao += 1;
 
         if (contadorRelogioCompactacao == tempoCompactacao)
+        {
             (*memoria).compactaMemoria();
+            contadorRelogioCompactacao = 0;
+        }
     }
 
     void executaProximoProcesso()
@@ -168,7 +171,7 @@ public:
             }
 
             // Mata o processo usuário
-            mataProcessoUsuario("usuário", processoUsuarioPID);
+            mataProcessoUsuario("usuario", processoUsuarioPID);
         }
     }
 

@@ -78,7 +78,7 @@ public:
 
     bool compara(string tipo, int PID)
     {
-        return this->tipo == tipo && this->PID == PID;
+        return ((this->tipo == tipo) && (this->PID == PID));
     }
 
     void imprimeStatusTCB()

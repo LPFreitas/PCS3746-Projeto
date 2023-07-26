@@ -108,15 +108,13 @@ public:
     {
         ElementoFila *atual = primeiroProcesso;
         ElementoFila *anterior = nullptr;
+
         while (atual != nullptr)
         {
             if ((atual->processo).compara(tipo, PID))
             {
-                if (anterior == nullptr)
-                {
-                    // Caso o elemento a ser removido seja o primeiro da fila
+                if (anterior == nullptr) // Caso o elemento a ser removido seja o primeiro da fila
                     primeiroProcesso = atual->proximoProcesso;
-                }
                 else
                     anterior->proximoProcesso = atual->proximoProcesso;
                 delete atual;
