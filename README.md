@@ -20,11 +20,13 @@ make
 make envia
 ```
 
-4. Para rodar o simulador de um sistema operacional no modo do escalador **FIFO**, execute em um terminal:
+4. Para rodar o simulador de um sistema operacional em um certo modo do escalador, execute em um terminal:
 
 ```
-./main fifo
+./main [modo]
 ```
+
+onde modo é "fifo" para executar no modo de escalonamento **FIFO (não-preemptivo)**, ou "robin" para executar no modo **ROUND-ROBIN (preemptivo)**.
 
 5. Para enviar os comandos para o simulador de SO, execute em outro terminal:
 

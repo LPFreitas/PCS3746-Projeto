@@ -145,9 +145,9 @@ public:
     void executaProcessoSO()
     {
         string tipoProcessoExecutando = (*processoExecutando).getTipo();
-        int processoExecutandoPID = (*processoExecutando).getPID();
+        int processoUsuarioPID = (*processoExecutando).getProcessoUsuarioPID();
 
-        cout << "Executando processo " << tipoProcessoExecutando << " " << processoExecutandoPID << endl
+        cout << "Executando processo " << tipoProcessoExecutando << " " << processoUsuarioPID << endl
              << endl;
 
         if (tipoProcessoExecutando == "create")
